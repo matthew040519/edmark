@@ -39,6 +39,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/supplier',[SupplierController::class, 'index']);
     Route::post('/supplier',[SupplierController::class, 'addsupplier'])->name('addsupplier');
     Route::get('/purchase-products',[Transaction::class, 'PurchaseProducts']);
+    Route::get('/delete-temp',[Transaction::class, 'deleteTemp']);
+    Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
     Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
     Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
     Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');

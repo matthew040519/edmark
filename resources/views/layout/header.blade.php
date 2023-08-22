@@ -379,15 +379,15 @@
                         <a class="dropdown-item" href="/purchase-products">
                           Purchase Products
                         </a>
-                        <a class="dropdown-item" href="/products">
-                          Products
+                        <a class="dropdown-item" href="/buy-products">
+                          Buy Products
                         </a>
-                         <a class="dropdown-item" href="/customer">
+                        <!--  <a class="dropdown-item" href="/customer">
                           Customer
                         </a>
                          <a class="dropdown-item" href="/supplier">
                           Supplier
-                        </a>
+                        </a> -->
                         <!-- <div class="dropend">
                           <a class="dropdown-item dropdown-toggle" href="#sidebar-authentication" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                             Authentication

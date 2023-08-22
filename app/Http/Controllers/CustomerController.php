@@ -33,6 +33,6 @@ class CustomerController extends Controller
         $customer->encoded_by = Auth::id();
         $customer->save();
 
-        return redirect('products');
+        return redirect('customer');
     }
 }

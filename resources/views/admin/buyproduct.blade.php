@@ -3,6 +3,7 @@
 @include('layout.header')
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <div class="page-wrapper">
         <!-- Page header -->
         <div class="page-header d-print-none">
@@ -14,7 +15,7 @@
                   Overview
                 </div>
                 <h2 class="page-title">
-                  Purchase Products
+                  Buy Products
                 </h2>
               </div>
               <!-- Page title actions -->
@@ -41,10 +42,10 @@
                     <input type="date" class="form-control" required="" name="tdate">
                 </div>
                 <div class="col-lg-3">
-                    <label>Supplier</label>
+                    <label>Customer</label>
                     <select class="form-control" name="supplier">
-                      @foreach($params['supplier'] as $suppliers)
-                        <option value="{{ $suppliers->id }}">{{ $suppliers->supplier_name }}</option>
+                      @foreach($params['customer'] as $customers)
+                        <option value="{{ $customers->id }}">{{ $customers->firstname." ".$customers->middlename." ".$customers->lastname }}</option>
                       @endforeach
                   </select>
                 </div>
@@ -52,14 +53,14 @@
                     <label>Total: </label>
                     <input type="text" class="form-control" id="total" readonly="" value="{{ number_format($params['total'], 2); }}">
                 </div>
-                <input type="hidden" value="{{ $params['total']; }}" name="amount">
-                <input type="hidden" value="PS" name="voucher">
-                <input type="hidden" value="purchase-products" name="link">
+                <input type="hidden"  value="{{ $params['total']; }}" name="amount">
+                <input type="hidden" value="CS" name="voucher">
+                <input type="hidden" value="buy-products" name="link">
                  <div class="col-auto ms-auto d-print-none mt-4">
                   <div class="btn-list">
 
                     
-                    <!-- <input type="submit" id="save" value="Save" class="btn btn-success d-none d-sm-inline-block" name=""> -->
+                    <!-- <input type="submit" disabled="" value="Save" class="btn btn-success d-none d-sm-inline-block" name=""> -->
 
                     <a href="" data-bs-toggle="modal" data-bs-target="#modal-success" aria-label="Create new report" class="btn btn-success d-none d-sm-inline-block">Save</a>
 
@@ -73,7 +74,7 @@
                             <div class="modal-footer">
                               <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
                               <!-- <button type="button" class="btn btn-success">Yes, Save this data</button> -->
-                              <input type="submit" id="save" value="Yes, Save this data" class="btn btn-success" name="">
+                              <input type="submit" id="savetransaction" value="Yes, Save this data" class="btn btn-success" name="">
                             </div>
                           </div>
                         </div>
@@ -97,22 +98,33 @@
               {{ csrf_field() }}
                 <div class="mb-3">
                   <label class="form-label">Product</label>
-                  <select class="form-control" name="product_id">
+                  <select class="form-control" name="product_id" id="product_id">
                     @foreach($params['product'] as $product)
-                      <option value="{{ $product->id }}">{{ $product->product_name }}</option>
+                      <option data-product_amount="{{ $product->price }}" qty="{{ $product->qty }}" value="{{ $product->id }}">{{ $product->product_name }}</option>
                     @endforeach
                   </select>
                 </div>
+                 <div class="mb-3">
+                  <label class="form-label">Price</label>
+                  <input type="number" class="form-control" readonly="" id="price" name="price" placeholder="Price">
+                </div>
+                <input type="hidden" value="CS" name="voucher">
+                <input type="hidden" value="buy-products" name="link">
+                <div class="mb-3">
+                  <label class="form-label">Qty Remaining</label>
+                  <input type="number" class="form-control" readonly="" id="qty_remain" name="qty_remain" placeholder="Qty">
+                </div>
                 <div class="mb-3">
                   <label class="form-label">Qty</label>
-                  <input type="number" class="form-control" name="qty" placeholder="Quantity">
+                  <input type="number" class="form-control" name="qty" id="qty" placeholder="Quantity">
                 </div>
-                <input type="hidden" value="PS" name="voucher">
-                <input type="hidden" value="purchase-products" name="link">
+
                 <div class="mb-3">
                   <label class="form-label">Peso Discount</label>
                   <input type="number" class="form-control" value="0" name="peso_discount" placeholder="Peso Discount">
                 </div>
+
+               
               <!-- <label class="form-label">Report type</label> -->
                 <!-- <div class="form-selectgroup-boxes row mb-3">
                   <div class="col-lg-6">
@@ -152,7 +164,7 @@
               Cancel
             </a>
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-            <input type="submit" class="btn btn-primary ms-auto" value="Save" name="addproduct">
+            <input type="submit" disabled="" id="save" class="btn btn-primary ms-auto" value="Save" name="addproduct">
             
           </div>
           </form>
@@ -180,10 +192,10 @@
                       @foreach($params['temp_product'] as $temp_products)
                         <tr>
                           <td class="sort-city">{{ $temp_products->product_name}}</td>
-                          <td class="sort-type">{{ $temp_products->PIn}}</td>
+                          <td class="sort-type">{{ $temp_products->POut}}</td>
                           <td class="sort-score">{{ number_format($temp_products->amount, 2)}}</td>
                           <td class="sort-date">{{ number_format($temp_products->piso_discount, 2)}}</td>
-                          <td class="sort-date">{{ number_format(($temp_products->amount * $temp_products->PIn) - $temp_products->piso_discount, 2)}}</td>
+                          <td class="sort-date">{{ number_format(($temp_products->amount * $temp_products->POut) - $temp_products->piso_discount, 2)}}</td>
                           <td><a href="" data-bs-toggle="modal" data-bs-target="#modal-danger{{ $temp_products->id }}" aria-label="Create new report" class="btn btn-danger btn-sm">Delete</a></td>
                         </tr>
                         <div class="modal modal-blur fade" id="modal-danger{{ $temp_products->id }}" tabindex="-1" role="dialog" aria-hidden="true">
@@ -203,7 +215,7 @@
                                     <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
                                         Cancel
                                       </a></div>
-                                    <div class="col"><a href="/delete-temp?id={{ $temp_products->id }}&link=purchase-products" class="btn btn-danger w-100">
+                                    <div class="col"><a href="/delete-temp?id={{ $temp_products->id }}&link=buy-products" class="btn btn-danger w-100">
                                         Delete
                                       </a></div>
                                   </div>
@@ -221,7 +233,6 @@
             </div>
           </div>
         </div>
-        
         @include('layout.footer')
       </div>
       <script src="https://code.jquery.com/jquery-3.7.0.js" type="text/javascript"></script>
@@ -233,17 +244,42 @@
       </script>
       <script type="text/javascript">
         $(document).ready(function(){
-            var total = $('#total').val();
 
-            if(total == "0.00")
+            var totalamount = $('#total').val();
+
+            if(totalamount == "0.00")
             {
-                $('#save').attr('disabled', true);
+                $('#savetransaction').attr('disabled', true);
             }
             else
             {
-                $('#save').removeAttr('disabled');
+                $('#savetransaction').removeAttr('disabled');
             }
 
+            $('#product_id').on('change', function() {
+              $('#price').val(($("#product_id").find(':selected').attr('data-product_amount')));
+              $('#qty_remain').val(($("#product_id").find(':selected').attr('qty')));
+            });
+            $("#qty").change(function(){
+              // $("input").css("background-color", "yellow");
+              var qty_remain = $('#qty_remain').val();
+              var qty = $('#qty').val();
+              const total = qty_remain - qty;
+              console.log(total)
+              if(total > 0)
+              {
+                  $("#qty").css("border-color", "black");
+                  $("#save").removeAttr('disabled');
+                  console.log('1');
+              }
+              else
+              {
+                  console.log('2');
+                  $("#qty").css("border-color", "red");
+                  $("#save").attr('disabled', true);
+              }
+            });
         });
+        
       </script>
   @endsection

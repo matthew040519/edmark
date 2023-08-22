@@ -14,7 +14,7 @@
                   Overview
                 </div>
                 <h2 class="page-title">
-                  Customer
+                  Supplier
                 </h2>
               </div>
               <!-- Page title actions -->
@@ -22,12 +22,10 @@
                 <div class="btn-list">
                   
                   <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-report">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                    Add Product
+                    Add Supplier
                   </a>
                   <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report" aria-label="Create new report">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                   </a>
                 </div>
@@ -39,66 +37,24 @@
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Add Customer</h5>
+            <h5 class="modal-title">Add Supplier</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" action="{{ route('addcustomer') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('addsupplier') }}" enctype="multipart/form-data">
               {{ csrf_field() }}
-                
-                  <div class="row">
-                    <div class="col-lg-4">
-                      <div class="mb-3">
-                        <label class="form-label">First Name</label>
-                        <div class="input-group input-group-flat">
-                         
-                          <input type="text" name="firstname" class="form-control ps-0" autocomplete="off">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-4">
-                      <div class="mb-3">
-                       <label class="form-label">Middle Name</label>
-                        <div class="input-group input-group-flat">
-                         
-                          <input type="text" name="middlename" class="form-control ps-0" autocomplete="off">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-4">
-                      <div class="mb-3">
-                       <label class="form-label">Last Name</label>
-                        <div class="input-group input-group-flat">
-                         
-                          <input type="text" name="lastname" class="form-control ps-0" autocomplete="off">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-6">
-                      <div class="mb-3">
-                       <label class="form-label">Contact Number</label>
-                        <div class="input-group input-group-flat">
-                         
-                          <input type="number" name="contact_number" class="form-control ps-0" autocomplete="off">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-6">
-                      <div class="mb-3">
-                       <label class="form-label">Birthdate</label>
-                        <div class="input-group input-group-flat">
-                         
-                          <input type="date" name="bdate" class="form-control ps-0" autocomplete="off">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-12">
-                      <div>
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" name="address" rows="3"></textarea>
-                      </div>
-                    </div>
-                  </div>
+                <div class="mb-3">
+                  <label class="form-label">Supplier Name</label>
+                  <input type="text" class="form-control" name="supplier_name" placeholder="Supplier Name">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Contact Number</label>
+                  <input type="number" class="form-control" name="contact_number" placeholder="Contact Number">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Address</label>
+                  <textarea class="form-control" name="address" rows="3"></textarea>
+                </div>
             
           </div>
            
@@ -107,7 +63,7 @@
               Cancel
             </a>
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-            <input type="submit" class="btn btn-primary ms-auto" value="Save" name="addproduct">
+            <input type="submit" class="btn btn-primary ms-auto" value="Save" name="addsupplier">
             
           </div>
           </form>
@@ -123,24 +79,17 @@
                   <table class="table" id="example" style="width: 100%;">
                     <thead>
                       <tr>
-                        <th><button class="table-sort" data-sort="sort-name">First Name</button></th>
-                        <th><button class="table-sort" data-sort="sort-city">Middle Name</button></th>
-                        <th><button class="table-sort" data-sort="sort-city">Last Name</button></th>
-                        <th><button class="table-sort" data-sort="sort-type">Contact Number</button></th>
-                        <th><button class="table-sort" data-sort="sort-score">Birthdate</button></th>
-                        <th><button class="table-sort" data-sort="sort-date">Address</button></th>
+                        <th><button class="table-sort" data-sort="sort-name">Supplier</button></th>
+                        <th><button class="table-sort" data-sort="sort-city">Address</button></th>
+                        <th><button class="table-sort" data-sort="sort-city">Contact Number</button></th>
                       </tr>
                     </thead>
                     <tbody class="table-tbody" >
-                     @foreach($customer as $customers)
+                     @foreach($supplier as $suppliers)
                       <tr>
-                        
-                        <td class="sort-city">{{ $customers->firstname}}</td>
-                        <td class="sort-city">{{ $customers->middlename}}</td>
-                        <td class="sort-city">{{ $customers->lastname}}</td>
-                        <td class="sort-type">{{ $customers->contact_number}}</td>
-                        <td class="sort-score">{{ $customers->bday}}</td>
-                        <td class="sort-date">{{ $customers->address}}</td>
+                        <td class="sort-score">{{ $suppliers->supplier_name}}</td>
+                        <td class="sort-date">{{ $suppliers->address}}</td>
+                        <td class="sort-date">{{ $suppliers->contact_number}}</td>
                       </tr>
                       @endforeach
                     </tbody>

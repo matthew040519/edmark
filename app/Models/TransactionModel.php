@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TransactionModel extends Model
 {
     use HasFactory;
+
+    protected $table = 'tbltransaction';
+    protected $fillable = ['voucher', 'docnumber', 'reference', 'customer_id', 'encoded_by', 'supplier_id', 'tdate', 'amount'];
 }

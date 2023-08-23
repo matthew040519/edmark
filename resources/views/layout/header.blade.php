@@ -172,6 +172,9 @@
                         <a class="dropdown-item" href="/products">
                           Products
                         </a>
+                        <a class="dropdown-item" href="/products-setup">
+                          Apply Promo
+                        </a>
                          <a class="dropdown-item" href="/customer">
                           Customer
                         </a>
@@ -381,6 +384,9 @@
                         </a>
                         <a class="dropdown-item" href="/buy-products">
                           Buy Products
+                        </a>
+                        <a class="dropdown-item" href="/refund-products">
+                          Refund Products
                         </a>
                         <!--  <a class="dropdown-item" href="/customer">
                           Customer

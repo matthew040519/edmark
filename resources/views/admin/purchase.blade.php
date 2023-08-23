@@ -43,6 +43,7 @@
                 <div class="col-lg-3">
                     <label>Supplier</label>
                     <select class="form-control" name="supplier">
+                      <option disabled="" selected="">-- Select Supplier --</option>
                       @foreach($params['supplier'] as $suppliers)
                         <option value="{{ $suppliers->id }}">{{ $suppliers->supplier_name }}</option>
                       @endforeach
@@ -98,6 +99,7 @@
                 <div class="mb-3">
                   <label class="form-label">Product</label>
                   <select class="form-control" name="product_id">
+                    <option disabled="" selected="">-- Select Product --</option>
                     @foreach($params['product'] as $product)
                       <option value="{{ $product->id }}">{{ $product->product_name }}</option>
                     @endforeach

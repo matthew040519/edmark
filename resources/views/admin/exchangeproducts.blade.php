@@ -15,24 +15,22 @@
                   Overview
                 </div>
                 <h2 class="page-title">
-                  Buy Products
+                  Refund Products
                 </h2>
               </div>
               <!-- Page title actions -->
-              <div class="col-auto ms-auto d-print-none">
+              <!-- <div class="col-auto ms-auto d-print-none">
                 <div class="btn-list">
 
                   <a href="#" class="btn btn-primary d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-report">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                     Add Product
                   </a>
                   <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report" aria-label="Create new report">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                   </a>
                 </div>
-              </div>
+              </div> -->
             </div>
             <form method="POST" action="{{ route('addpurchases') }}">
               {{ csrf_field() }}
@@ -43,12 +41,21 @@
                 </div>
                 <div class="col-lg-3">
                     <label>Customer</label>
-                    <select class="form-control" name="supplier" required="">
+                    <select class="form-control" id="customers" name="supplier" required="">
                       <option disabled="" selected="">-- Select Customer --</option>
                       @foreach($params['customer'] as $customers)
                         <option value="{{ $customers->id }}">{{ $customers->firstname." ".$customers->middlename." ".$customers->lastname }}</option>
                       @endforeach
                   </select>
+                </div>
+                <div class="col-lg-3">
+                    <label>Reference</label>
+                    <select class="form-control" id="reference" name="reference" required="">
+                     
+                  </select>
+                </div>
+                <div class="col-lg-3">
+                  
                 </div>
                 <div class="col-lg-3">
                     <label>Total: </label>
@@ -245,6 +252,7 @@
                 $('#photo').attr('href', link);
                 $('#divphoto').css('background-image', "url(" + link + ")");
             });
+
             $("#qty").change(function(){
               // $("input").css("background-color", "yellow");
               var qty_remain = $('#qty_remain').val();
@@ -264,6 +272,40 @@
                   $("#save").attr('disabled', true);
               }
             });
+
+            $('#customers').on('change', function() {
+                $.ajax({
+                 url: '/getReference?customer_id=' + this.value,
+                 type: 'get',
+                 dataType: 'json',
+                 success: function(response){
+                  $('#reference').empty();
+                  console.log(response);
+                   var len = 0;
+                   if(response['data'] != null){
+                      len = response['data'].length;
+                   }
+
+                   if(len > 0){
+                      for(var i=0; i<len; i++){
+                         var reference = response['data'][i].reference;
+
+                         var tr_str = "<option value=" + reference + ">" + reference + "</option>";
+
+                         $("#reference").append(tr_str);
+                      }
+                   }
+                   else{
+                      // var tr_str = "<tr>" +
+                      //     "<td align='center' colspan='4'>Search to display.</td>" +
+                      // "</tr>";
+
+                      // $("#reference").append(tr_str);
+                   }
+                 }
+               });
+            });
+
         });
         
       </script>

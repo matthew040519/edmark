@@ -33,6 +33,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/dashboard',[DashboardController::class, 'index']);
     Route::get('/branch',[BranchController::class, 'index']);
     Route::get('/products',[ProductController::class, 'index']);
+    Route::get('/products-setup',[ProductController::class, 'productsetup']);
+    Route::post('/products-setup',[ProductController::class, 'addproductsetup'])->name('addproductsetup');
     Route::post('/products',[ProductController::class, 'addproduct'])->name('addproduct');
     Route::get('/customer',[CustomerController::class, 'index']);
     Route::post('/customer',[CustomerController::class, 'addcustomer'])->name('addcustomer');
@@ -41,6 +43,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/purchase-products',[Transaction::class, 'PurchaseProducts']);
     Route::get('/delete-temp',[Transaction::class, 'deleteTemp']);
     Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
+    Route::get('/refund-products',[Transaction::class, 'RefundProducts']);
+    Route::get('/getReference',[Transaction::class, 'getReference']);
     Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
     Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
     Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');

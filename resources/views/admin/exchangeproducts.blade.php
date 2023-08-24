@@ -54,9 +54,9 @@
                      
                   </select>
                 </div>
-                <div class="col-lg-3">
-                  
-                </div>
+                <!-- <div class="col-lg-3">
+                    
+                </div> -->
                 <div class="col-lg-3">
                     <label>Total: </label>
                     <input type="text" class="form-control" id="total" readonly="" value="{{ number_format($params['total'], 2); }}">
@@ -70,7 +70,7 @@
                     
                     <!-- <input type="submit" disabled="" value="Save" class="btn btn-success d-none d-sm-inline-block" name=""> -->
 
-                    <a href="" data-bs-toggle="modal" data-bs-target="#modal-success" aria-label="Create new report" class="btn btn-success d-none d-sm-inline-block">Save</a>
+                    <!-- <a href="" data-bs-toggle="modal" data-bs-target="#modal-success" aria-label="Create new report" class="btn btn-success d-none d-sm-inline-block">Save</a>
 
                     <div class="modal modal-blur fade" id="modal-success" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
@@ -81,12 +81,11 @@
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-link link-secondary me-auto" data-bs-dismiss="modal">Cancel</button>
-                              <!-- <button type="button" class="btn btn-success">Yes, Save this data</button> -->
                               <input type="submit" id="savetransaction" value="Yes, Save this data" class="btn btn-success" name="">
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> -->
                     
                   </div>
               </div>
@@ -94,71 +93,7 @@
             </form>
           </div>
         </div>
-        <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Add Product</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form method="POST" action="{{ route('addtempproduct') }}" enctype="multipart/form-data">
-              {{ csrf_field() }}
-              <div class="row">
-                  <div class="col-lg-6">
-                      <a data-fslightbox="gallery" height="100px" id="photo" href="#">
-                      <!-- Photo -->
-                        <div class="img-responsive img-responsive-3x1 rounded-3 border" id="divphoto"></div>
-                      </a>
-                  </div>
-                  <div class="col-lg-6">
-                      <div class="mb-3">
-                        <label class="form-label">Product</label>
-                        <select class="form-control" name="product_id" id="product_id">
-                          <option disabled="" selected="">-- Select Product --</option>
-                          @foreach($params['product'] as $product)
-                            <option data-product_amount="{{ $product->price }}" link="{{ $product->image }}" qty="{{ $product->qty }}" value="{{ $product->id }}">{{ $product->product_name }}</option>
-                          @endforeach
-                        </select>
-                      </div>
-                      <div class="mb-3">
-                        <label class="form-label">Price</label>
-                        <input type="number" class="form-control" readonly="" id="price" name="price" placeholder="Price">
-                      </div>
-                  </div>
-              </div>
-                
-                 
-                <input type="hidden" value="CS" name="voucher">
-                <input type="hidden" value="buy-products" name="link">
-                <div class="mb-3">
-                  <label class="form-label">Qty Remaining</label>
-                  <input type="number" class="form-control" readonly="" id="qty_remain" name="qty_remain" placeholder="Qty">
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Qty</label>
-                  <input type="number" class="form-control" name="qty" id="qty" placeholder="Quantity">
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Peso Discount</label>
-                  <input type="number" class="form-control" value="0" name="peso_discount" placeholder="Peso Discount">
-                </div>
-            
-          </div>
-           
-          <div class="modal-footer">
-            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
-              Cancel
-            </a>
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-            <input type="submit" disabled="" id="save" class="btn btn-primary ms-auto" value="Save" name="addproduct">
-            
-          </div>
-          </form>
-        </div>
-      </div>
-    </div>
+        
         <!-- Page body -->
         <div class="page-body">
           <div class="container-xl">
@@ -176,43 +111,8 @@
                         <th><button class="table-sort" data-sort="sort-city">Settings</button></th>
                       </tr>
                     </thead>
-                    <tbody class="table-tbody" >
-                      @foreach($params['temp_product'] as $temp_products)
-                        <tr>
-                          <td class="sort-city">{{ $temp_products->product_name }} @if($temp_products->free =='1') (Free) @endif</td>
-                          <td class="sort-type">{{ $temp_products->POut}}</td>
-                          <td class="sort-score">{{ number_format($temp_products->amount, 2)}}</td>
-                          <td class="sort-date">{{ number_format($temp_products->piso_discount, 2)}}</td>
-                          <td class="sort-date">{{ number_format(($temp_products->amount * $temp_products->POut) - $temp_products->piso_discount, 2)}}</td>
-                          <td><a href="" data-bs-toggle="modal" data-bs-target="#modal-danger{{ $temp_products->id }}" aria-label="Create new report" class="btn btn-danger btn-sm">Delete</a></td>
-                        </tr>
-                        <div class="modal modal-blur fade" id="modal-danger{{ $temp_products->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                          <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              <div class="modal-status bg-danger"></div>
-                              <div class="modal-body text-center py-4">
-                                <!-- Download SVG icon from http://tabler-icons.io/i/alert-triangle -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
-                                <h3>Are you sure?</h3>
-                                <div class="text-secondary">Do you really want to remove item?</div>
-                              </div>
-                              <div class="modal-footer">
-                                <div class="w-100">
-                                  <div class="row">
-                                    <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
-                                        Cancel
-                                      </a></div>
-                                    <div class="col"><a href="/delete-temp?id={{ $temp_products->id }}&link=buy-products" class="btn btn-danger w-100">
-                                        Delete
-                                      </a></div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      @endforeach
+                    <tbody>
+                      
                     </tbody>
 
                   </table>
@@ -221,6 +121,31 @@
             </div>
           </div>
         </div>
+        <div class="modal modal-blur fade" tabindex="-1" id="modal-danger" role="dialog" aria-hidden="true">
+                          <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              <div class="modal-status bg-secondary"></div>
+                              <div class="modal-body text-center py-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+                                <h3>Are you sure?</h3>
+                                <div class="text-secondary">Do you really want to refund this item?</div>
+                              </div>
+                              <div class="modal-footer">
+                                <div class="w-100">
+                                  <div class="row">
+                                    <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
+                                        Cancel
+                                      </a></div>
+                                    <div class="col"><a href="" id="refund" class="btn btn-secondary w-100">
+                                        Refund
+                                      </a></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
         @include('layout.footer')
       </div>
       <script src="https://code.jquery.com/jquery-3.7.0.js" type="text/javascript"></script>
@@ -228,7 +153,7 @@
       <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" type="text/javascript"></script>
       
       <script type="text/javascript">
-        new DataTable('#example');
+        
       </script>
       <script type="text/javascript">
         $(document).ready(function(){
@@ -287,13 +212,16 @@
                    }
 
                    if(len > 0){
+                      var tr_str1 = "<option disabled selected> -- Select Reference -- </option>";
+                      $("#reference").append(tr_str1);
                       for(var i=0; i<len; i++){
                          var reference = response['data'][i].reference;
 
-                         var tr_str = "<option value=" + reference + ">" + reference + "</option>";
+                          var tr_str = "<option value=" + reference + ">" + reference + "</option>";
 
                          $("#reference").append(tr_str);
                       }
+                      // new DataTable('#example');
                    }
                    else{
                       // var tr_str = "<tr>" +
@@ -305,6 +233,83 @@
                  }
                });
             });
+
+            $('#reference').on('change', function() {
+                $.ajax({
+                 url: '/getProductTransaction?reference_id=' + this.value,
+                 type: 'get',
+                 dataType: 'json',
+                 success: function(response){
+                  $('tbody').empty();
+                  console.log(response);
+                   var len = 0;
+                   if(response['data'] != null){
+                      len = response['data'].length;
+                   }
+                   var totalamount = 0;
+                   if(len > 0){
+                    
+                      for(var i=0; i<len; i++){
+                         var id = response['data'][i].id;
+                         var product_name = response['data'][i].product_name;
+                         var free = response['data'][i].free;
+                         var PIn = response['data'][i].PIn;
+                         var POut = response['data'][i].POut;
+                         var amount = response['data'][i].amount;
+                         var piso_discount = response['data'][i].piso_discount;
+                         var reference = response['data'][i].reference;
+                         var product_id = response['data'][i].product_id;
+                         var refund = response['data'][i].refund;
+                         var total = (amount * POut) - piso_discount;
+
+                         totalamount += amount;
+
+                         var tr_str = "<tr>" +
+                           "<td>" + product_name + "</td>" +
+                           "<td>" + POut + "</td>" +
+                           "<td>" + amount.toFixed(2) + "</td>" +
+                           "<td>" + piso_discount.toFixed(2) + "</td>" +
+                           "<td>" + total.toFixed(2) + "</td>";
+                           if(!refund)
+                           {
+                               if(!free)
+                               {  
+                                  $('.modal').attr('id', "modal-danger" + id + "")
+                                  $('#refund').attr('href', "/refund?id=" + id +"&link=refund-products&reference_id=" + reference + "&product_id=" + product_id)
+
+                                  tr_str += "<td><a href='' data-bs-toggle='modal' data-bs-target='#modal-danger" + id + "' aria-label='Create new report' class='btn btn-secondary btn-sm'>Refund</a></td>"
+                                  
+                               }
+                               else
+                               {
+                                  tr_str +="<td>Free</td>"
+                               }
+                           }
+                           else
+                           {
+                                tr_str +="<td>Refunded</td>"
+                           }
+                           
+                         tr_str +="</tr>";
+
+                         $("tbody").append(tr_str);
+                      }
+
+
+                      $('#total').val(totalamount.toFixed(2));
+                      
+                   }
+                   else{
+                      // var tr_str = "<tr>" +
+                      //     "<td align='center' colspan='4'>Search to display.</td>" +
+                      // "</tr>";
+
+                      // $("#reference").append(tr_str);
+                   }
+                 }
+               });
+            });
+
 
         });
         

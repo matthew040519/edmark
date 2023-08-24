@@ -117,7 +117,7 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="d-flex align-items-center">
-                      <div class="subheader">Branch Sales (All time)</div>
+                      <div class="subheader">Todays Sales</div>
                       <!-- <div class="ms-auto lh-1">
                         <div class="dropdown">
                           <a class="dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Last 7 days</a>
@@ -129,7 +129,7 @@
                         </div>
                       </div> -->
                     </div>
-                    <div class="h1 mb-3">&#8369 {{ number_format($params['sales'] ,2); }}</div>
+                    <div class="h1 mb-3">&#8369 {{ number_format($params['todaysales'] ,2); }}</div>
                     <div class="d-flex mb-2">
                       
                     </div>
@@ -171,10 +171,10 @@
                           </div>
                           <div class="col">
                             <div class="font-weight-medium">
-                              78 Orders
+                              {{ number_format($params['todayorders'], 0); }} Orders
                             </div>
                             <div class="text-secondary">
-                              32 shipped
+                              Completed
                             </div>
                           </div>
                         </div>

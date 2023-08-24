@@ -12,6 +12,7 @@ use App\Models\ProductSetupModel;
 use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Transaction extends Controller
 {
@@ -226,5 +227,107 @@ class Transaction extends Controller
         return json_encode($reference);
     }
 
+
+    public function getProductTransactions()
+    {
+        $reference_id = request()->reference_id;
+
+        $transaction = ProductTransactionModel::select('tblproduct_transaction.id', 'tblproduct_transaction.refund', 'tblproduct_transaction.product_id', 'tblproduct_transaction.reference', 'tblproduct_transaction.free', 'tblproducts.product_name', 'tblproduct_transaction.PIn', 'tblproduct_transaction.POut', 'tblproduct_transaction.amount', 'tblproduct_transaction.piso_discount', DB::raw('tblproduct_transaction.amount * tblproduct_transaction.POut - tblproduct_transaction.piso_discount as total'))->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('reference', $reference_id)->get();
+
+        $transactionData['data'] = $transaction;
+
+        return json_encode($transactionData);
+    }
+
+    public function refundtransaction()
+    {
+        $id = request()->id;
+        $reference_id = request()->reference_id;
+        $product_id = request()->product_id;
+
+        $transaction = TransactionModel::where('reference', $reference_id)->first();
+
+        $product_transaction = ProductTransactionModel::where([ ['product_id', $product_id], ['reference', $reference_id] ])->first();
+
+        // dd($reference_id);
+
+        $tdate = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');
+
+        function generateRandomNumber() {
+
+            $number = mt_rand(1000000000, 9999999999);
+
+            if (randomNumberExists($number)) {
+                return generateRandomNumber();
+            }
+
+            return $number;
+        }
+
+        function randomNumberExists($number) {
+            return TransactionModel::where('reference', $number)->exists();
+        }
+
+        $randomNum = generateRandomNumber();
+
+        $maintransaction = new TransactionModel();
+
+        $maintransaction->voucher = 'RS';
+        $maintransaction->docnumber = 'RS'.$randomNum."|".Auth::id();
+        $maintransaction->reference = $randomNum;
+        $maintransaction->encoded_by = Auth::id();
+        $maintransaction->customer_id = $transaction->customer_id;
+        $maintransaction->tdate = $tdate;
+        $maintransaction->amount = intval(-$product_transaction->amount);
+        $maintransaction->branch_id = Auth::user()->branch_id;
+        $maintransaction->save();
+
+        
+
+        ProductTransactionModel::where([ ['product_id', $product_id], ['reference', $reference_id] ])->update(['refund'=> 1]);
+
+        $transaction_product = new ProductTransactionModel();
+
+        $transaction_product->voucher = 'RS';
+        $transaction_product->docnumber = 'RS'.$randomNum."|".Auth::id();
+        $transaction_product->reference = $randomNum;
+        $transaction_product->product_id = $product_transaction->product_id;
+        
+        $transaction_product->PIn = $product_transaction->POut;
+        $transaction_product->POut = 0;
+        $transaction_product->amount = $product_transaction->amount * $product_transaction->POut;        
+        
+            
+        $transaction_product->piso_discount = $product_transaction->piso_discount;
+        $transaction_product->refund = 1;
+        $transaction_product->save();
+
+        $productsetup = ProductSetupModel::where('product_id', $product_id)->get();
+        
+        foreach($productsetup as $productsetups)
+        {
+            $transaction_product = new ProductTransactionModel();
+
+            $transaction_product->voucher = 'RS';
+            $transaction_product->docnumber = 'RS'.$randomNum."|".Auth::id();
+            $transaction_product->reference = $randomNum;
+            $transaction_product->product_id = $productsetups->free_product_id;
+            
+            $transaction_product->PIn = $productsetups->qty;
+            $transaction_product->POut = 0;
+            $transaction_product->amount = $productsetups->amount * $productsetups->qty;        
+            
+                
+            $transaction_product->piso_discount = 0;
+            $transaction_product->free = 1;
+            $transaction_product->refund = 1;
+            $transaction_product->save();
+
+            ProductTransactionModel::where([ ['product_id', $productsetups->free_product_id], ['reference', $reference_id] ])->update(['refund'=> 1]);
+        }
+
+        return redirect(request()->link);
+
+    }
     
 }

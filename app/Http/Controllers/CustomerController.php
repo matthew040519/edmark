@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomerModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use PDF;
 
 class CustomerController extends Controller
 {
@@ -34,5 +35,18 @@ class CustomerController extends Controller
         $customer->save();
 
         return redirect('customer');
+    }
+
+    public function createPDF() {
+      
+      $params1 = [];
+
+      $params1['data'] = CustomerModel::all();
+
+      view()->share('customer',$params1['data']);
+
+      $pdf = PDF::loadView('admin.inventory', $params1);
+
+      return $pdf->download('pdf_file.pdf');
     }
 }

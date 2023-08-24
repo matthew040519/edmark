@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TransactionModel;
 use App\Models\CustomerModel;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -17,9 +18,15 @@ class DashboardController extends Controller
         $branch_id = Auth::user()->branch_id;
         $id = Auth::user()->id;
 
-        $params['sales'] = TransactionModel::select('amount')->where([ ['branch_id', $branch_id],['voucher', 'CS'] ])->sum('amount');
+        $tdate = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');
 
-        $params['mysales'] = TransactionModel::select('amount')->where([ ['encoded_by', $id],['voucher', 'CS'] ])->sum('amount');
+        $params['sales'] = TransactionModel::select('amount')->where([ ['branch_id', $branch_id],['voucher', 'CS'] ])->orwhere('voucher', 'RS')->sum('amount');
+
+        $params['mysales'] = TransactionModel::select('amount')->where([ ['encoded_by', $id],['voucher', 'CS'] ])->orwhere('voucher', 'RS')->sum('amount');
+
+        $params['todaysales'] = TransactionModel::select('amount')->where([ ['encoded_by', $id],['voucher', 'CS'] , ['tdate', $tdate]])->orwhere('voucher', 'RS')->sum('amount');
+
+        $params['todayorders'] = TransactionModel::select('id')->where([ ['encoded_by', $id],['voucher', 'CS'] ])->count('id');
 
         $params['countCustomer'] = CustomerModel::select('id')->count('id');
 

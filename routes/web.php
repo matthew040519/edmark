@@ -8,6 +8,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\Transaction;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::post('/products-setup',[ProductController::class, 'addproductsetup'])->name('addproductsetup');
     Route::post('/products',[ProductController::class, 'addproduct'])->name('addproduct');
     Route::get('/customer',[CustomerController::class, 'index']);
+    Route::get('/customer/pdf',[CustomerController::class, 'createPDF']);
     Route::post('/customer',[CustomerController::class, 'addcustomer'])->name('addcustomer');
     Route::get('/supplier',[SupplierController::class, 'index']);
     Route::post('/supplier',[SupplierController::class, 'addsupplier'])->name('addsupplier');
@@ -45,6 +47,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
     Route::get('/refund-products',[Transaction::class, 'RefundProducts']);
     Route::get('/getReference',[Transaction::class, 'getReference']);
+    Route::get('/getProductTransaction',[Transaction::class, 'getProductTransactions']);
+    Route::get('/refund',[Transaction::class, 'refundtransaction']);
+    Route::get('/inventory',[ReportController::class, 'inventory']);
     Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
     Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
     Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');

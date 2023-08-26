@@ -54,6 +54,14 @@
       	font-feature-settings: "cv03", "cv04", "cv11";
       }
     </style>
+    <style type="text/css">
+      /*footer {
+          position: fixed;
+          height: 70px;
+          bottom: 0;
+          width: 100%;
+      }*/
+    </style>
   </head>
   <body >
     <script src="./dist/js/demo-theme.min.js?1685973381"></script>

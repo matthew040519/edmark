@@ -386,7 +386,7 @@
                           Buy Products
                         </a>
                         <a class="dropdown-item" href="/refund-products">
-                          Refund Products
+                          Exchange Products
                         </a>
                       </div>
                     </div>
@@ -414,12 +414,15 @@
                         <a class="dropdown-item" href="/inventory">
                           Inventory
                         </a>
-                        <a class="dropdown-item" href="/buy-products">
-                          Buy Products
+                        <a class="dropdown-item" href="/gross-profit">
+                          Gross Profit
                         </a>
-                        <a class="dropdown-item" href="/refund-products">
+                        <a class="dropdown-item" href="/transaction">
+                          Transactions
+                        </a>
+                        <!-- <a class="dropdown-item" href="/refund-products">
                           Refund Products
-                        </a>
+                        </a> -->
                       </div>
                     </div>
                   </div>

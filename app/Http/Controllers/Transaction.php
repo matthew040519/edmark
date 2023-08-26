@@ -37,7 +37,7 @@ class Transaction extends Controller
     public function BuyProducts()
     {
         $customer = CustomerModel::all();
-        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id'])->get();
+        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproduct_transaction.refund', 0)->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id'])->get();
 
         $params = [];
 
@@ -99,7 +99,8 @@ class Transaction extends Controller
             }
         }
 
-        return redirect($request->link);
+        // return redirect($request->link);
+        return redirect()->back()->with('status', 'Product Add Successfully');
     }
 
     public function insert_purchases(Request $request)
@@ -173,7 +174,8 @@ class Transaction extends Controller
             TempProductModel::where('id', $temp_products->id)->delete();
         }
 
-        return redirect($request->link);
+        // return redirect($request->link);
+        return redirect()->back()->with('status', 'Transaction Successfully');
     }
 
     public function deleteTemp()
@@ -284,7 +286,7 @@ class Transaction extends Controller
 
         
 
-        ProductTransactionModel::where([ ['product_id', $product_id], ['reference', $reference_id] ])->update(['refund'=> 1]);
+        // ProductTransactionModel::where([ ['product_id', $product_id], ['reference', $reference_id] ])->update(['refund'=> 1]);
 
         $transaction_product = new ProductTransactionModel();
 
@@ -323,10 +325,11 @@ class Transaction extends Controller
             $transaction_product->refund = 1;
             $transaction_product->save();
 
-            ProductTransactionModel::where([ ['product_id', $productsetups->free_product_id], ['reference', $reference_id] ])->update(['refund'=> 1]);
+            // ProductTransactionModel::where([ ['product_id', $productsetups->free_product_id], ['reference', $reference_id] ])->update(['refund'=> 1]);
         }
 
-        return redirect(request()->link);
+        // return redirect(request()->link);
+        return redirect()->back()->with('status', 'Exchange Successfully');
 
     }
     

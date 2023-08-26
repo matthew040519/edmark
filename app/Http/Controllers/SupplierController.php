@@ -25,7 +25,8 @@ class SupplierController extends Controller
         $supplier->contact_number = $request->contact_number;
         $supplier->save();
 
-        return redirect('supplier');
+        // return redirect('supplier');
+        return redirect()->back()->with('status', 'Supplier Add Successfully');
 
     }
 }

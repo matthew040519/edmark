@@ -18,7 +18,7 @@
                   Overview
                 </div>
                 <h2 class="page-title">
-                  Inventory Report
+                  Gross Profit
                 </h2>
               </div>
               <!-- Page title actions -->
@@ -42,11 +42,19 @@
                     <label>Reports to View</label>
                     <select class="form-control" id="rtd"  name="rtd" required="">
                       <option disabled="" selected="">-- Select Report --</option>
-                      <option value="1">Inventory</option>
+                      <option value="1">Gross Profit</option>
                   </select>
                 </div>
 
-                
+                <div class="col-lg-3">
+                    <label>Beginning Date</label>
+                    <input type="date" id="from" class="form-control" value="{{ $params['tdate'] }}" required="" name="tdate">
+                </div>
+
+                <div class="col-lg-3">
+                    <label>End Date</label>
+                    <input type="date" id="to" class="form-control" value="{{ $params['tdate'] }}" required="" name="tdate">
+                </div>  
 
                 <div class="col-lg-3 mt-4">
                     <button type="button" id="preview" disabled="" class="btn btn-primary">Preview</button>
@@ -123,8 +131,11 @@
                 var rtdvalue = $('#rtd').val();
                 if(rtdvalue == 1)
                 {
+                    var from = $('#from').val();
+                    var to = $('#to').val();
+
                     $.ajax({
-                       url: '/showinventory',
+                       url: '/show-gross-profit?from=' + from + '&to=' + to,
                        type: 'get',
                        dataType: 'json',
                        success: function(response){
@@ -136,31 +147,69 @@
                          }
 
                          if(len > 0){
+                            var grandtotal = 0;
                             var tr_str = "<thead>" +
                                             "<tr>" +
+                                              "<th>Date</th>" +
+                                              "<th>Customer</th>" +
+                                              "<th>Product Code</th>" +
                                               "<th>Product Name</th>" +
+                                              "<th>Status</th>" +
                                               "<th>Product Qty</th>" +
+                                              "<th>Product Amount</th>" +
+                                              "<th>Total Amount</th>" +
                                             "</tr>"+
                                           "</thead>"+
                                           "<tbody>";
                                            for(var i=0; i<len; i++){
 
+                                                var customer = response['data'][i].firstname + " " + response['data'][i].lastname;
+                                                // var lastname = ;
+                                                var product_code = response['data'][i].product_code;
                                                 var product_name = response['data'][i].product_name;
+                                                var free = response['data'][i].free;
+                                                var amount = response['data'][i].amount;
                                                 var qty = response['data'][i].qty;
+                                                var tdate = response['data'][i].tdate;
+
+                                                var isAmount = free ? 0 : amount;
+                                                var total = isAmount * qty;
+
+                                                grandtotal += total;
+
+                                                var isfree = free ? "<td>Free</td>" : "<td></td>";
+                                                var isfreeAmount = free ? "<td>0</td>" : "<td>" + parseFloat(amount).toLocaleString("en-US" , 
+ {   minimumFractionDigits: 2
+}) + "</td>";
 
                                               tr_str += "<tr>" +
+                                                 "<td>" + tdate + "</td>" +
+                                                 "<td>" + customer + "</td>" +
+                                                 "<td>" + product_code + "</td>" +
                                                  "<td>" + product_name + "</td>" +
+                                                 isfree +
                                                  "<td>" + qty + "</td>" +
-                                              "</tr>"
+                                                 isfreeAmount +
+                                                 "<td>" + parseFloat(total.toFixed(2)).toLocaleString("en-US" , 
+ {   minimumFractionDigits: 2
+}) + "</td>" +
+                                              "</tr>" 
 
                     
                                             }
+
+                                            tr_str += "<tr>"+
+                                              "<td colspan='7'> </td>" + 
+                                              "<td>" + parseFloat(grandtotal.toFixed(2)).toLocaleString("en-US" , 
+ {   minimumFractionDigits: 2
+}) + "</td>" +
+                                              "</tr>"
 
                                             tr_str += "</tbody>";
 
                                             $("table").append(tr_str);    
 
-                                            $('#export').attr('href', 'export?process=inventory');
+                                            $('#export').attr('href', 'export?process=grossprofit&from=' + from +'&to=' + to);
                          }
                          else{
                             // var tr_str = "<tr>" +
@@ -174,6 +223,7 @@
                 }
             } );
             $('#rtd').on('change', function() {
+                // alert('test')
                 $('#preview').removeAttr('disabled');
             });
         });

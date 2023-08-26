@@ -36,7 +36,8 @@ class ProductController extends Controller
         $destinationPath = 'product_image';
         $file->move($destinationPath,$file->getClientOriginalName());
 
-        return redirect('products');
+        // return redirect('products');
+        return redirect()->back()->with('status', 'Product Add Successfully');
     }
 
     public function productsetup()
@@ -62,6 +63,7 @@ class ProductController extends Controller
         $ProductSetupModel->amount = $request->product_price;
         $ProductSetupModel->save();
 
-        return redirect('products-setup');
+        // return redirect('products-setup');
+        return redirect()->back()->with('status', 'Product Setup Add Successfully');
     }
 }

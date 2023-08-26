@@ -15,7 +15,7 @@
                   Overview
                 </div>
                 <h2 class="page-title">
-                  Refund Products
+                  Exchange Products
                 </h2>
               </div>
               <!-- Page title actions -->
@@ -35,10 +35,10 @@
             <form method="POST" action="{{ route('addpurchases') }}">
               {{ csrf_field() }}
             <div class="row mt-3">
-              <div class="col-lg-3">
+              <!-- <div class="col-lg-3">
                     <label>Date</label>
                     <input type="date" class="form-control" required="" name="tdate">
-                </div>
+                </div> -->
                 <div class="col-lg-3">
                     <label>Customer</label>
                     <select class="form-control" id="customers" name="supplier" required="">
@@ -97,6 +97,20 @@
         <!-- Page body -->
         <div class="page-body">
           <div class="container-xl">
+            @if(session('status'))
+            <div class="alert alert-success alert-dismissible" role="alert">
+                      <div class="d-flex">
+                        <div>
+                          <!-- Download SVG icon from http://tabler-icons.io/i/check -->
+                          <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                        </div>
+                        <div>
+                          {{ session('status') }}
+                        </div>
+                      </div>
+                      <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
+                    </div>
+            @endif
             <div class="card">
               <div class="card-body">
                 <div id="table-default" class="table-responsive">
@@ -129,7 +143,7 @@
                               <div class="modal-body text-center py-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
                                 <h3>Are you sure?</h3>
-                                <div class="text-secondary">Do you really want to refund this item?</div>
+                                <div class="text-secondary">Do you really want to exchange this item?</div>
                               </div>
                               <div class="modal-footer">
                                 <div class="w-100">
@@ -138,7 +152,7 @@
                                         Cancel
                                       </a></div>
                                     <div class="col"><a href="" id="refund" class="btn btn-secondary w-100">
-                                        Refund
+                                        Exchange
                                       </a></div>
                                   </div>
                                 </div>
@@ -270,25 +284,25 @@
                            "<td>" + amount.toFixed(2) + "</td>" +
                            "<td>" + piso_discount.toFixed(2) + "</td>" +
                            "<td>" + total.toFixed(2) + "</td>";
-                           if(!refund)
-                           {
+                           // if(!refund)
+                           // {
                                if(!free)
                                {  
                                   $('.modal').attr('id', "modal-danger" + id + "")
                                   $('#refund').attr('href', "/refund?id=" + id +"&link=refund-products&reference_id=" + reference + "&product_id=" + product_id)
 
-                                  tr_str += "<td><a href='' data-bs-toggle='modal' data-bs-target='#modal-danger" + id + "' aria-label='Create new report' class='btn btn-secondary btn-sm'>Refund</a></td>"
+                                  tr_str += "<td><a href='' data-bs-toggle='modal' data-bs-target='#modal-danger" + id + "' aria-label='Create new report' class='btn btn-secondary btn-sm'>Exchange</a></td>"
                                   
                                }
                                else
                                {
                                   tr_str +="<td>Free</td>"
                                }
-                           }
-                           else
-                           {
-                                tr_str +="<td>Refunded</td>"
-                           }
+                           // }
+                           // else
+                           // {
+                           //      tr_str +="<td>Refunded</td>"
+                           // }
                            
                          tr_str +="</tr>";
 

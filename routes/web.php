@@ -49,9 +49,15 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/getReference',[Transaction::class, 'getReference']);
     Route::get('/getProductTransaction',[Transaction::class, 'getProductTransactions']);
     Route::get('/refund',[Transaction::class, 'refundtransaction']);
-    Route::get('/inventory',[ReportController::class, 'inventory']);
+    
     Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
     Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
     Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');
+
+    Route::get('/inventory',[ReportController::class, 'inventory']);
+    Route::get('/showinventory',[ReportController::class, 'showinventory']);
+    Route::get('/gross-profit',[ReportController::class, 'grossprofit']);
+    Route::get('/show-gross-profit',[ReportController::class, 'showgrossprofit']);
+    Route::get('/export',[ReportController::class, 'export']);
 
 });

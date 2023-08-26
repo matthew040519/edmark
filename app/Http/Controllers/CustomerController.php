@@ -34,7 +34,8 @@ class CustomerController extends Controller
         $customer->encoded_by = Auth::id();
         $customer->save();
 
-        return redirect('customer');
+        // return redirect('customer');
+        return redirect()->back()->with('status', 'Customer Add Successfully');
     }
 
     public function createPDF() {

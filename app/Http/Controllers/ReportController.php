@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductSetupModel;
 use App\Models\ProductsModel;
 use App\Models\CustomerModel;
+use App\Models\SupplierModel;
 use App\Models\TransactionModel;
 use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
@@ -59,6 +60,44 @@ class ReportController extends Controller
             return view('admin.pdf_blade.grossprofit')->with('params', $params);
         }
 
+        if($process == 'transaction')
+        {
+            $voucher = request()->voucher;
+
+            $params = [];
+
+            if($voucher == "PS")
+            {
+
+                $params['voucher'] = 'Purchase Transaction';
+
+                $params['purchase'] = TransactionModel::select('tblproducts.product_name', 'tblproducts.product_code',
+                'tbltransaction.reference', 'tbltransaction.voucher', 'tblproduct_transaction.PIn AS qty', 'tblsupplier.supplier_name', 'tblproduct_transaction.amount', 'tbltransaction.tdate')->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblsupplier', 'tblsupplier.id', 'tbltransaction.supplier_id')->where('tbltransaction.voucher', $voucher)->orderby('tbltransaction.tdate')->get();
+
+                $params['totalSum'] = TransactionModel::select('tbltransaction.amount')->where('tbltransaction.voucher', $voucher)->sum('tbltransaction.amount');
+            }
+            else if($voucher == "RS")
+            {
+                $params['voucher'] = 'Exhange Transaction';
+
+                $params['purchase'] = TransactionModel::select('tblproducts.product_name', 'tblproducts.product_code',
+                'tbltransaction.reference', 'tbltransaction.voucher', 'tblproduct_transaction.PIn AS qty', DB::raw("CONCAT(tblcustomer.firstname,' ',tblcustomer.lastname) as supplier_name ") , 'tblproduct_transaction.amount', 'tbltransaction.tdate')->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.voucher', $voucher)->where('tblproduct_transaction.free', 0)->orderby('tbltransaction.tdate')->get();
+
+                $params['totalSum'] = ProductTransactionModel::select(DB::raw('sum(tblproduct_transaction.amount * tblproduct_transaction.POut) as qty'))->where('tblproduct_transaction.voucher', $voucher)->first();
+            }
+            else
+            {
+                $params['voucher'] = 'Buy Transaction';
+
+                $params['purchase'] = TransactionModel::select('tblproducts.product_name', 'tblproducts.product_code',
+                'tbltransaction.reference', 'tbltransaction.voucher', 'tblproduct_transaction.POut AS qty', DB::raw("CONCAT(tblcustomer.firstname,' ',tblcustomer.lastname) as supplier_name ") , 'tblproduct_transaction.amount', 'tbltransaction.tdate')->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.voucher', $voucher)->where('tblproduct_transaction.free', 0)->orderby('tbltransaction.tdate')->get();
+
+                $params['totalSum'] = TransactionModel::select('tbltransaction.amount')->where('tbltransaction.voucher', $voucher)->sum('tbltransaction.amount');
+            }
+
+            return view('admin.pdf_blade.transaction')->with('params', $params);
+        }
+
     }
 
     public function createPDF() {
@@ -96,4 +135,46 @@ class ReportController extends Controller
         return json_encode($transactionData);
     }
 
+    public function transaction()
+    {
+        $params = [];
+
+        $params['customer'] = CustomerModel::all();
+        $params['supplier'] = SupplierModel::all();
+
+        return view('admin.transaction')->with('params', $params);
+    }
+
+    public function showpurchase()
+    {
+        $voucher = request()->voucher;
+
+        if($voucher == "PS")
+        {
+            $purchase = TransactionModel::select('tblproducts.product_name', 'tblproducts.product_code',
+            'tbltransaction.reference', 'tbltransaction.voucher', 'tblproduct_transaction.PIn AS qty', 'tblsupplier.supplier_name', 'tblproduct_transaction.amount', 'tbltransaction.tdate')->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblsupplier', 'tblsupplier.id', 'tbltransaction.supplier_id')->where('tbltransaction.voucher', $voucher)->orderby('tbltransaction.tdate')->get();
+        }
+        else if($voucher == "RS")
+        {
+            $purchase = TransactionModel::select('tblproducts.product_name', 'tblproducts.product_code',
+            'tbltransaction.reference', 'tbltransaction.voucher', 'tblproduct_transaction.PIn AS qty', DB::raw("CONCAT(tblcustomer.firstname,' ',tblcustomer.lastname) as supplier_name ") , 'tblproduct_transaction.amount', 'tbltransaction.tdate')->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.voucher', $voucher)->where('tblproduct_transaction.free', 0)->orderby('tbltransaction.tdate')->get();
+        }
+        else
+        {
+            $purchase = TransactionModel::select('tblproducts.product_name', 'tblproducts.product_code',
+            'tbltransaction.reference', 'tbltransaction.voucher', 'tblproduct_transaction.POut AS qty', DB::raw("CONCAT(tblcustomer.firstname,' ',tblcustomer.lastname) as supplier_name ") , 'tblproduct_transaction.amount', 'tbltransaction.tdate')->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.voucher', $voucher)->where('tblproduct_transaction.free', 0)->orderby('tbltransaction.tdate')->get();
+        }
+        
+
+        $purchaseData['data'] = $purchase;
+
+        return json_encode($purchaseData);
+    }
+
+    public function test()
+    {
+        return "test";
+    }
+
 }
+

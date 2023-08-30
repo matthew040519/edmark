@@ -8,7 +8,9 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\Transaction;
+use App\Http\Controllers\shoppingcart;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CustomerDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,38 +28,55 @@ Route::get('/', function () {
 })->name('login');
 
 Route::post('/login-user', [LoginController::class, 'authenticate'] )->name('loginuser');
+Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');
 
 
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
 
-    Route::get('/dashboard',[DashboardController::class, 'index']);
-    Route::get('/branch',[BranchController::class, 'index']);
-    Route::get('/products',[ProductController::class, 'index']);
-    Route::get('/products-setup',[ProductController::class, 'productsetup']);
-    Route::post('/products-setup',[ProductController::class, 'addproductsetup'])->name('addproductsetup');
-    Route::post('/products',[ProductController::class, 'addproduct'])->name('addproduct');
-    Route::get('/customer',[CustomerController::class, 'index']);
-    Route::get('/customer/pdf',[CustomerController::class, 'createPDF']);
-    Route::post('/customer',[CustomerController::class, 'addcustomer'])->name('addcustomer');
-    Route::get('/supplier',[SupplierController::class, 'index']);
-    Route::post('/supplier',[SupplierController::class, 'addsupplier'])->name('addsupplier');
-    Route::get('/purchase-products',[Transaction::class, 'PurchaseProducts']);
-    Route::get('/delete-temp',[Transaction::class, 'deleteTemp']);
-    Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
-    Route::get('/refund-products',[Transaction::class, 'RefundProducts']);
-    Route::get('/getReference',[Transaction::class, 'getReference']);
-    Route::get('/getProductTransaction',[Transaction::class, 'getProductTransactions']);
-    Route::get('/refund',[Transaction::class, 'refundtransaction']);
-    
-    Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
-    Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
-    Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');
+    Route::middleware(['restrictRole:admin'])->group(function() {
 
-    Route::get('/inventory',[ReportController::class, 'inventory']);
-    Route::get('/showinventory',[ReportController::class, 'showinventory']);
-    Route::get('/gross-profit',[ReportController::class, 'grossprofit']);
-    Route::get('/show-gross-profit',[ReportController::class, 'showgrossprofit']);
-    Route::get('/export',[ReportController::class, 'export']);
+        Route::get('/dashboard',[DashboardController::class, 'index']);
+        Route::get('/branch',[BranchController::class, 'index']);
+        Route::get('/products',[ProductController::class, 'index']);
+        Route::get('/products-setup',[ProductController::class, 'productsetup']);
+        Route::post('/products-setup',[ProductController::class, 'addproductsetup'])->name('addproductsetup');
+        Route::post('/products',[ProductController::class, 'addproduct'])->name('addproduct');
+        Route::get('/customer',[CustomerController::class, 'index']);
+        Route::get('/customer/pdf',[CustomerController::class, 'createPDF']);
+        Route::post('/customer',[CustomerController::class, 'addcustomer'])->name('addcustomer');
+        Route::get('/supplier',[SupplierController::class, 'index']);
+        Route::post('/supplier',[SupplierController::class, 'addsupplier'])->name('addsupplier');
+        Route::get('/purchase-products',[Transaction::class, 'PurchaseProducts']);
+        Route::get('/delete-temp',[Transaction::class, 'deleteTemp']);
+        Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
+        Route::get('/refund-products',[Transaction::class, 'RefundProducts']);
+        Route::get('/getReference',[Transaction::class, 'getReference']);
+        Route::get('/getProductTransaction',[Transaction::class, 'getProductTransactions']);
+        Route::get('/refund',[Transaction::class, 'refundtransaction']);
+        
+        Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
+        Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
+        
+
+        Route::get('/inventory',[ReportController::class, 'inventory']);
+        Route::get('/transaction',[ReportController::class, 'transaction']);
+        Route::get('/showtransaction',[ReportController::class, 'showpurchase']);
+        Route::get('/showinventory',[ReportController::class, 'showinventory']);
+        Route::get('/gross-profit',[ReportController::class, 'grossprofit']);
+        Route::get('/show-gross-profit',[ReportController::class, 'showgrossprofit']);
+        Route::get('/export',[ReportController::class, 'export']);
+
+    });
+
+
+    Route::middleware(['restrictRole:customer'])->group(function() {
+
+        Route::get('/customerdashboard',[CustomerDashboardController::class, 'index']);
+        Route::get('/shopping-cart',[shoppingcart::class, 'index']);
+        Route::get('/order-product',[shoppingcart::class, 'orderproduct']);
+        Route::get('/order-product-details',[shoppingcart::class, 'orderproductdetails']);
+
+    });
 
 });

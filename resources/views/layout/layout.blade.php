@@ -65,6 +65,19 @@
   </head>
   <body >
     <script src="./dist/js/demo-theme.min.js?1685973381"></script>
+    <!-- <div class="page page-center">
+      <div class="container container-slim py-4">
+        <div class="text-center">
+          <div class="mb-3">
+            <a href="." class="navbar-brand navbar-brand-autodark"><img src="./static/logo-small.svg" height="36" alt=""></a>
+          </div>
+          <div class="text-secondary mb-3">Preparing application</div>
+          <div class="progress progress-sm">
+            <div class="progress-bar progress-bar-indeterminate"></div>
+          </div>
+        </div>
+      </div>
+    </div> -->
     @yield('content')
     <!-- Libs JS -->
     <!-- <script src="./dist/libs/apexcharts/dist/apexcharts.min.js?1685973381" defer></script>
@@ -76,6 +89,7 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer><  /script> -->
     <script src="./dist/js/tabler.min.js?1685973381" defer></script>
     <script src="./dist/js/demo.min.js?1685973381" defer></script>
+     
     
   </body>
 </html>

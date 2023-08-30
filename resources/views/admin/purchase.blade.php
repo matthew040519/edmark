@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-lg-3">
                     <label>Supplier</label>
-                    <select class="form-control" name="supplier">
+                    <select class="form-control" name="supplier" id="supplier">
                       <option disabled="" selected="">-- Select Supplier --</option>
                       @foreach($params['supplier'] as $suppliers)
                         <option value="{{ $suppliers->id }}">{{ $suppliers->supplier_name }}</option>
@@ -84,10 +84,11 @@
               </div>
             </div>
             </form>
+
           </div>
         </div>
         <div class="modal modal-blur fade" id="modal-report" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Add Product</h5>
@@ -98,12 +99,17 @@
               {{ csrf_field() }}
                 <div class="mb-3">
                   <label class="form-label">Product</label>
-                  <select class="form-control" name="product_id">
+                  <select type="text" class="form-select" name="product_id" id="product">
                     <option disabled="" selected="">-- Select Product --</option>
                     @foreach($params['product'] as $product)
                       <option value="{{ $product->id }}">{{ $product->product_name }}</option>
                     @endforeach
                   </select>
+                  
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Cost</label>
+                  <input type="number" class="form-control" name="price" placeholder="Cost">
                 </div>
                 <div class="mb-3">
                   <label class="form-label">Qty</label>
@@ -115,37 +121,6 @@
                   <label class="form-label">Peso Discount</label>
                   <input type="number" class="form-control" value="0" name="peso_discount" placeholder="Peso Discount">
                 </div>
-              <!-- <label class="form-label">Report type</label> -->
-                <!-- <div class="form-selectgroup-boxes row mb-3">
-                  <div class="col-lg-6">
-                    <label class="form-selectgroup-item">
-                      <input type="radio" name="report-type" value="1" class="form-selectgroup-input" checked>
-                      <span class="form-selectgroup-label d-flex align-items-center p-3">
-                        <span class="me-3">
-                          <span class="form-selectgroup-check"></span>
-                        </span>
-                        <span class="form-selectgroup-label-content">
-                          <span class="form-selectgroup-title strong mb-1">Simple</span>
-                          <span class="d-block text-secondary">Provide only basic data needed for the report</span>
-                        </span>
-                      </span>
-                    </label>
-                  </div>
-                  <div class="col-lg-6">
-                    <label class="form-selectgroup-item">
-                      <input type="radio" name="report-type" value="1" class="form-selectgroup-input">
-                      <span class="form-selectgroup-label d-flex align-items-center p-3">
-                        <span class="me-3">
-                          <span class="form-selectgroup-check"></span>
-                        </span>
-                        <span class="form-selectgroup-label-content">
-                          <span class="form-selectgroup-title strong mb-1">Advanced</span>
-                          <span class="d-block text-secondary">Insert charts and additional advanced analyses to be inserted in the report</span>
-                        </span>
-                      </span>
-                    </label>
-                  </div>
-                </div> -->
             
           </div>
            
@@ -244,10 +219,11 @@
       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" type="text/javascript"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" type="text/javascript"></script>
       <script src="dist/libs/fslightbox/index.js?1685973381" defer></script>
+      <script src="dist/libs/tom-select/dist/js/tom-select.base.min.js?1685973381" defer></script>
       <script type="text/javascript">
         new DataTable('#example');
       </script>
-      <script type="text/javascript">
+      <script>
         $(document).ready(function(){
             var total = $('#total').val();
 
@@ -262,4 +238,31 @@
 
         });
       </script>
+      <script type="text/javascript">
+        // @formatter:off
+        document.addEventListener("DOMContentLoaded", function () {
+          var el;
+          window.TomSelect && (new TomSelect(el = document.getElementById('supplier'), {
+            copyClassesToDropdown: false,
+            dropdownParent: 'body',
+            controlInput: '<input>',
+            render:{
+              item: function(data,escape) {
+                if( data.customProperties ){
+                  return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+                }
+                return '<div>' + escape(data.text) + '</div>';
+              },
+              option: function(data,escape){
+                if( data.customProperties ){
+                  return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+                }
+                return '<div>' + escape(data.text) + '</div>';
+              },
+            },
+          }));
+        });
+        // @formatter:on
+      </script>
+     
   @endsection

@@ -7,6 +7,8 @@ use App\Models\CustomerModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use PDF;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class CustomerController extends Controller
 {
@@ -32,7 +34,17 @@ class CustomerController extends Controller
         $customer->address = $request->address;
         $customer->encoded_date = $tdate;
         $customer->encoded_by = Auth::id();
+        $customer->email = $request->firstname.'.'.$request->lastname.'@edmark.com';
+        $customer->password = Hash::make('12345');
         $customer->save();
+
+        $user = new User();
+
+        $user->name = $request->firstname.' '.$request->lastname;
+        $user->email = $request->firstname.'.'.$request->lastname.'@edmark.com';
+        $user->password = Hash::make('12345');
+        $user->role = 'customer';
+        $user->save();
 
         // return redirect('customer');
         return redirect()->back()->with('status', 'Customer Add Successfully');
@@ -49,5 +61,10 @@ class CustomerController extends Controller
       $pdf = PDF::loadView('admin.inventory', $params1);
 
       return $pdf->download('pdf_file.pdf');
+    }
+
+    public function test()
+    {
+        return "test";
     }
 }

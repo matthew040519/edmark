@@ -63,14 +63,16 @@ class Transaction extends Controller
         {
                 $TempProductModel->PIn = $request->qty;
                 $TempProductModel->POut = 0;
+                $TempProductModel->amount = $request->price;
         }
         else
         {
                 $TempProductModel->POut = $request->qty;
                 $TempProductModel->PIn = 0;
+                $TempProductModel->amount = $productamount->price;
         }
         
-        $TempProductModel->amount = $productamount->price;
+        
         $TempProductModel->piso_discount = $request->peso_discount;
         $TempProductModel->user_id = Auth::id();
         $TempProductModel->save();
@@ -158,13 +160,13 @@ class Transaction extends Controller
             {
                 $product_transaction->PIn = $temp_products->PIn;
                 $product_transaction->POut = 0;
-                $product_transaction->amount = $temp_products->amount * $temp_products->PIn;
+                $product_transaction->amount = $temp_products->amount;
             }
             else
             {
                 $product_transaction->POut = $temp_products->POut;
                 $product_transaction->PIn = 0;
-                $product_transaction->amount = $temp_products->amount * $temp_products->POut;
+                $product_transaction->amount = $temp_products->amount;
                 $product_transaction->free = $temp_products->free;
             }
             
@@ -332,5 +334,7 @@ class Transaction extends Controller
         return redirect()->back()->with('status', 'Exchange Successfully');
 
     }
+
+    
     
 }

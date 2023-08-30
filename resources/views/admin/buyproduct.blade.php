@@ -43,10 +43,10 @@
                 </div>
                 <div class="col-lg-3">
                     <label>Customer</label>
-                    <select class="form-control" name="supplier" required="">
+                    <select class="form-control" name="supplier" required="" id="customer">
                       <option disabled="" selected="">-- Select Customer --</option>
                       @foreach($params['customer'] as $customers)
-                        <option value="{{ $customers->id }}">{{ $customers->firstname." ".$customers->middlename." ".$customers->lastname }}</option>
+                        <option value="{{ $customers->id }}">{{ $customers->firstname." ".$customers->lastname }}</option>
                       @endforeach
                   </select>
                 </div>
@@ -232,7 +232,7 @@
       <script src="https://code.jquery.com/jquery-3.7.0.js" type="text/javascript"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" type="text/javascript"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js" type="text/javascript"></script>
-      
+      <script src="dist/libs/tom-select/dist/js/tom-select.base.min.js?1685973381" defer></script>
       <script type="text/javascript">
         new DataTable('#example');
       </script>
@@ -281,4 +281,30 @@
         
       </script>
       <script src="dist/libs/fslightbox/index.js?1685973381" defer></script>
+      <script>
+        // @formatter:off
+        document.addEventListener("DOMContentLoaded", function () {
+          var el;
+          window.TomSelect && (new TomSelect(el = document.getElementById('customer'), {
+            copyClassesToDropdown: false,
+            dropdownParent: 'body',
+            controlInput: '<input>',
+            render:{
+              item: function(data,escape) {
+                if( data.customProperties ){
+                  return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+                }
+                return '<div>' + escape(data.text) + '</div>';
+              },
+              option: function(data,escape){
+                if( data.customProperties ){
+                  return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
+                }
+                return '<div>' + escape(data.text) + '</div>';
+              },
+            },
+          }));
+        });
+        // @formatter:on
+      </script>
   @endsection

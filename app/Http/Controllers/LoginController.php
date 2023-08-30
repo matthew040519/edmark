@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -17,14 +18,24 @@ class LoginController extends Controller
         ]);
  
         if (Auth::attempt($credentials)) {
+
+            // dd($credentials['email']);
+
+            $user = User::where('email', $credentials['email'])->first();
+
             $request->session()->regenerate();
+
+            return $user->role == 'admin' ? redirect()->intended('dashboard') : redirect()->intended('customerdashboard');
+
+            // if($user->role == 'admin')
  
-            return redirect()->intended('dashboard');
+            
         }
  
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
+        // return "not found";
     }
 
 

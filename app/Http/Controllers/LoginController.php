@@ -32,9 +32,7 @@ class LoginController extends Controller
             
         }
  
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        return redirect()->back()->with('status', 'User Not Found!, Please try again');
         // return "not found";
     }
 

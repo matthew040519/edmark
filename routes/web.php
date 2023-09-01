@@ -55,6 +55,11 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/getProductTransaction',[Transaction::class, 'getProductTransactions']);
         Route::get('/refund',[Transaction::class, 'refundtransaction']);
         
+        Route::get('/pending-application',[Transaction::class, 'pendingapplication']);
+        Route::get('/approve-application',[Transaction::class, 'approveapplication']);
+        Route::get('/cancel-application',[Transaction::class, 'cancelledapplication']);
+        Route::get('/completed-application',[Transaction::class, 'completeapplication']);
+        
         Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
         Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
         
@@ -65,6 +70,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/showinventory',[ReportController::class, 'showinventory']);
         Route::get('/gross-profit',[ReportController::class, 'grossprofit']);
         Route::get('/show-gross-profit',[ReportController::class, 'showgrossprofit']);
+        Route::get('/customer-points',[ReportController::class, 'customerpoints']);
         Route::get('/export',[ReportController::class, 'export']);
 
     });
@@ -74,8 +80,15 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
         Route::get('/customerdashboard',[CustomerDashboardController::class, 'index']);
         Route::get('/shopping-cart',[shoppingcart::class, 'index']);
-        Route::get('/order-product',[shoppingcart::class, 'orderproduct']);
+        Route::get('/order-product',[shoppingcart::class, 'orderproduct'])->name('searchproducts');
         Route::get('/order-product-details',[shoppingcart::class, 'orderproductdetails']);
+        Route::post('/add-to-cart',[shoppingcart::class, 'addtocart']);
+        Route::post('/checkout',[shoppingcart::class, 'checkout'])->name('checkout');
+
+        Route::get('/pending-orders',[shoppingcart::class, 'pendingorders']);
+        Route::get('/approve-orders',[shoppingcart::class, 'approveorders']);
+        Route::get('/cancelled-orders',[shoppingcart::class, 'cancelledorders']);
+        Route::get('/completed-orders',[shoppingcart::class, 'completedorders']);
 
     });
 

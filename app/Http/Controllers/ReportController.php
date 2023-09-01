@@ -46,6 +46,14 @@ class ReportController extends Controller
             return view('admin.pdf_blade.inventory_blade')->with('products', $products);
         }
 
+        if($process == 'customerpoints')
+        {
+            
+            $customerpoints = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id', DB::raw('sum(tblproduct_transaction.POut * tblproducts.points) as totalpoints'))->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->join('tblproduct_transaction', 'tblproduct_transaction.reference', 'tbltransaction.reference')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tbltransaction.voucher', 'CS')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->get();
+
+            return view('admin.pdf_blade.customerpoints')->with('customerpoints', $customerpoints);
+        }
+
         if($process == 'grossprofit')
         {
             $from = request()->from;
@@ -55,10 +63,12 @@ class ReportController extends Controller
             
             $params['transaction'] = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblproducts.product_code', 'tblproducts.product_name', 'tblproduct_transaction.POut AS qty', 'tblproducts.price as amount', 'tbltransaction.tdate', 'tblproduct_transaction.free')->join('tblproduct_transaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.voucher', 'CS')->where('tblproduct_transaction.free', 0)->whereBetween('tbltransaction.tdate', [$from, $to])->orderby('tblcustomer.id')->get();
 
-            $params['totalSum'] = TransactionModel::select('tbltransaction.amount')->join('tblproduct_transaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->where('tbltransaction.voucher', 'CS')->where('tblproduct_transaction.free', 0)->whereBetween('tbltransaction.tdate', [$from, $to])->sum('tbltransaction.amount');
+            $params['totalSum'] = TransactionModel::select('tbltransaction.amount')->where('tbltransaction.voucher', 'CS')->sum('tbltransaction.amount');
 
             return view('admin.pdf_blade.grossprofit')->with('params', $params);
         }
+
+
 
         if($process == 'transaction')
         {
@@ -174,6 +184,26 @@ class ReportController extends Controller
     public function test()
     {
         return "test";
+    }
+
+    public function customerpoints()
+    {
+       
+        // dd($productsetup); 
+
+        $show = request()->show;
+
+        if($show)
+        {
+            $customerpoints = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id', DB::raw('sum(tblproduct_transaction.POut * tblproducts.points) as totalpoints'))->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->join('tblproduct_transaction', 'tblproduct_transaction.reference', 'tbltransaction.reference')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tbltransaction.voucher', 'CS')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->get();
+
+            $customerpointsdata['data'] = $customerpoints;
+
+            return json_encode($customerpointsdata);
+
+        }
+
+        return view('admin.customerpoints');
     }
 
 }

@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title>Edmark</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- <script defer data-api="/stats/api/event" data-domain="preview.tabler.io" src="/stats/js/script.js"></script> -->
     <meta name="msapplication-TileColor" content=""/>
     <meta name="theme-color" content=""/>

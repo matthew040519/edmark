@@ -13,6 +13,7 @@ use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\ApplicationModel;
 
 class Transaction extends Controller
 {
@@ -319,7 +320,7 @@ class Transaction extends Controller
             
             $transaction_product->PIn = $productsetups->qty;
             $transaction_product->POut = 0;
-            $transaction_product->amount = $productsetups->amount * $productsetups->qty;        
+            $transaction_product->amount = $productsetups->amount;        
             
                 
             $transaction_product->piso_discount = 0;
@@ -333,6 +334,174 @@ class Transaction extends Controller
         // return redirect(request()->link);
         return redirect()->back()->with('status', 'Exchange Successfully');
 
+    }
+
+    public function pendingapplication()
+    {
+        $params = [];
+
+        $params['title'] = "Pending";
+
+        $application_id = request()->application_id;
+        $status = request()->status;
+
+        if($application_id != "")
+        {
+
+            ApplicationModel::where([ ['application_id', $application_id] ])->update(['status' => $status]);
+
+            if($status == 1)
+            {
+                return redirect()->back()->with('status', 'Approve Successfully')->with('color', 'success');
+            }
+            else if($status == 2)
+            {
+                return redirect()->back()->with('status', 'Decline Successfully')->with('color', 'danger');
+            }
+
+        }
+
+    
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->orderby('tblapplication.status')->paginate(10);
+
+        foreach($params['application_id'] as $application)
+        {
+            $total = 0;
+
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0], ['tblapplication.application_id', $application->application_id] ])->get();
+
+          
+        }
+
+
+
+        // dd(intval($total));
+
+        return view('admin.orders')->with('params', $params);
+    }
+
+    public function approveapplication()
+    {
+        $params = [];
+
+        $params['title'] = "Approve";
+
+        $application_id = request()->application_id;
+        $status = request()->status;
+
+        if($application_id != "")
+        {
+
+            ApplicationModel::where([ ['application_id', $application_id] ])->update(['status' => $status]);
+
+            $tdate = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');
+
+            $applicationgroupby = ApplicationModel::select('customer_id')->where([ ['application_id', $application_id] ])->groupBy('customer_id')->first();
+
+            $application_sum = ApplicationModel::select(DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['application_id', $application_id] ])->first();
+
+            $application = ApplicationModel::where([ ['application_id', $application_id] ])->get();
+
+
+            $maintransaction = new TransactionModel();
+
+            $maintransaction->voucher = 'CS';
+            $maintransaction->docnumber = 'CS'.$application_id."|".Auth::id();
+            $maintransaction->reference = $application_id;
+            $maintransaction->encoded_by = Auth::id();
+            $maintransaction->customer_id = $applicationgroupby->customer_id;
+            $maintransaction->tdate = $tdate;
+            $maintransaction->amount = intval($application_sum->total);
+            $maintransaction->branch_id = Auth::user()->branch_id;
+            $maintransaction->save();
+
+            foreach($application as $applications)
+            {
+                $transaction_product = new ProductTransactionModel();
+
+                $transaction_product->voucher = 'CS';
+                $transaction_product->docnumber = 'CS'.$application_id."|".Auth::id();
+                $transaction_product->reference = $application_id;
+                $transaction_product->product_id = $applications->product_id;
+                
+                $transaction_product->PIn = 0;
+                $transaction_product->POut = $applications->qty;
+                $transaction_product->amount = $applications->amount;        
+                
+                    
+                $transaction_product->piso_discount = 0;
+                $transaction_product->free = 0;
+                $transaction_product->refund = 0;
+                $transaction_product->save();
+            }
+
+                return redirect()->back()->with('status', 'Completed Successfully')->with('color', 'success');
+            
+
+        }
+
+    
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 1] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->paginate(10);
+
+        foreach($params['application_id'] as $application)
+        {
+            $total = 0;
+
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 1], ['tblapplication.application_id', $application->application_id] ])->get();
+
+          
+        }
+
+
+
+        // dd(intval($total));
+
+        return view('admin.orders')->with('params', $params);
+    }
+
+    public function cancelledapplication()
+    {
+        $params = [];
+
+        $params['title'] = "Cancelled";
+    
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 2] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->paginate(10);
+
+        foreach($params['application_id'] as $application)
+        {
+            $total = 0;
+
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 2], ['tblapplication.application_id', $application->application_id] ])->get();
+
+          
+        }
+
+        return view('admin.orders')->with('params', $params);
+    }
+
+    public function completeapplication()
+    {
+        $params = [];
+
+        $params['title'] = "Completed";
+
+    
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 3] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->paginate(10);
+
+        foreach($params['application_id'] as $application)
+        {
+            $total = 0;
+
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 3], ['tblapplication.application_id', $application->application_id] ])->get();
+
+          
+        }
+
+
+
+        // dd(intval($total));
+
+        return view('admin.orders')->with('params', $params);
     }
 
     

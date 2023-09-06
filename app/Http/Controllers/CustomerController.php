@@ -26,6 +26,25 @@ class CustomerController extends Controller
         $customer = new CustomerModel();
         $tdate = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');
 
+        function generateEmailNumber($firstname, $lastname) {
+
+            $number = mt_rand(100, 999);
+
+            $defaultemail = $firstname.'.'.$lastname.''.$number.''.'@edmark.com';
+
+            if (randomEmailExists($defaultemail)) {
+                return generateEmailNumber($firstname, $lastname);
+            }
+
+            return $defaultemail;
+        }
+
+        function randomEmailExists($email) {
+            return User::where('email', $email)->exists();
+        }
+
+        $email = generateEmailNumber($request->firstname, $request->lastname);
+
         $customer->firstname = $request->firstname;
         $customer->middlename = $request->middlename;
         $customer->lastname = $request->lastname;
@@ -34,14 +53,14 @@ class CustomerController extends Controller
         $customer->address = $request->address;
         $customer->encoded_date = $tdate;
         $customer->encoded_by = Auth::id();
-        $customer->email = $request->firstname.'.'.$request->lastname.'@edmark.com';
+        $customer->email = $email;
         $customer->password = Hash::make('12345');
         $customer->save();
 
         $user = new User();
 
         $user->name = $request->firstname.' '.$request->lastname;
-        $user->email = $request->firstname.'.'.$request->lastname.'@edmark.com';
+        $user->email = $email;
         $user->password = Hash::make('12345');
         $user->role = 'customer';
         $user->save();

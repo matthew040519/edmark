@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @section('content')
 @include('layout.header')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.css">
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <link
       href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
@@ -125,6 +125,7 @@
                         <th><button class="table-sort" data-sort="sort-type">Product Name (Free or Discounted)</button></th>
                         <th><button class="table-sort" data-sort="sort-score">Amount</button></th>
                         <th><button class="table-sort" data-sort="sort-date">Quantity</button></th>
+                        <th><button class="table-sort" data-sort="sort-city">Settings</button></th>
                       </tr>
                     </thead>
                     <tbody class="table-tbody" >
@@ -135,7 +136,33 @@
                         <td class="sort-city">{{ $product->bproduct}}</td>
                         <td class="sort-type">{{ $product->amount}}</td>
                         <td class="sort-score">{{ $product->qty}}</td>
+                        <td><a href="" data-bs-toggle="modal" data-bs-target="#modal-danger{{ $product->id }}" aria-label="Create new report" class="btn btn-danger btn-md">Delete</a></td>
                       </tr>
+                      <div class="modal modal-blur fade" id="modal-danger{{ $product->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                          <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              <div class="modal-status bg-danger"></div>
+                              <div class="modal-body text-center py-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+                                <h3>Are you sure?</h3>
+                                <div class="text-secondary">Do you really want to remove item?</div>
+                              </div>
+                              <div class="modal-footer">
+                                <div class="w-100">
+                                  <div class="row">
+                                    <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
+                                        Cancel
+                                      </a></div>
+                                    <div class="col"><a href="/products-setup?id={{ $product->id }}" class="btn btn-danger w-100">
+                                        Delete
+                                      </a></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       @endforeach
                     </tbody>
                   </table>

@@ -92,6 +92,34 @@
                 </div>
               </div>
             </div>
+            @if(count($params['free_product']) > 0)
+             <h2 class="page-title mt-3">
+                  Free Products/ Discounted Products
+                </h2>
+            <div class="row row-cards mt-2">
+              @foreach($params['free_product'] as $free_product)
+              <div class="col-md-4 col-lg-4">
+                <div class="card">
+                  <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="product_image/{{ $free_product->image }}">
+                        </div>
+                        <div class="col-md-9">
+                             <h1 class="m-0 mb-1">({{ $free_product->qty }}) {{ $free_product->bproduct }}</h1>
+                             <div><h1 class="text-green">&#8369; {{ $free_product->amount }}</h1></div>
+                              <div class="mt-3">
+                                {{ $free_product->product_details }}
+                              </div>
+                              
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @endforeach
+            </div>
+            @endif
           </div>
         </div>
         @include('layout.footer')

@@ -3,6 +3,7 @@
 <div class="page">
       <!-- Navbar -->
       @include('layout.header')
+
       <div class="page-wrapper">
         <!-- Page header -->
         <div class="page-header d-print-none">
@@ -139,60 +140,62 @@
               </div>
               <div class="col-12">
                 <div class="row row-cards">
-                  <div class="col-sm-6 col-lg-3">
-                    <div class="card card-sm">
-                      <div class="card-body">
-                        <div class="row align-items-center">
-                          <div class="col-auto">
-                            <span class="bg-secondary text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/currency-dollar -->
-                              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-pause" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-   <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
-   <path d="M6 21v-2a4 4 0 0 1 4 -4h3.5"></path>
-   <path d="M17 17v5"></path>
-   <path d="M21 17v5"></path>
-</svg>
-                            </span>
-                          </div>
-                          <div class="col">
-                            <div class="font-weight-medium">
-                              Pending Orders
-                            </div>
-                            <div class="text-secondary">
-                              {{ $params['countPending'] }}
-                            </div>
-                          </div>
+                  <div class="col-sm-6 col-lg-6">
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-6">
+                            <div class="card card-sm">
+                                  <div class="card-body">
+                                    <div class="row align-items-center">
+                                      <div class="col-auto">
+                                        <span class="bg-secondary text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/currency-dollar -->
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-pause" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+               <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+               <path d="M6 21v-2a4 4 0 0 1 4 -4h3.5"></path>
+               <path d="M17 17v5"></path>
+               <path d="M21 17v5"></path>
+            </svg>
+                                        </span>
+                                      </div>
+                                      <div class="col">
+                                        <div class="font-weight-medium">
+                                          Pending Orders
+                                        </div>
+                                        <div class="text-secondary">
+                                          {{ $params['countPending'] }}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-6 col-lg-3">
-                    <div class="card card-sm">
-                      <div class="card-body">
-                        <div class="row align-items-center">
-                          <div class="col-auto">
-                            <span class="bg-success text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/currency-dollar -->
-                              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-   <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
-   <path d="M6 21v-2a4 4 0 0 1 4 -4h4"></path>
-   <path d="M15 19l2 2l4 -4"></path>
-</svg>
-                            </span>
-                          </div>
-                          <div class="col">
-                            <div class="font-weight-medium">
-                              Approve Orders
+                         <div class="col-sm-6 col-lg-6">
+                              <div class="card card-sm">
+                                <div class="card-body">
+                                  <div class="row align-items-center">
+                                    <div class="col-auto">
+                                      <span class="bg-success text-white avatar"><!-- Download SVG icon from http://tabler-icons.io/i/currency-dollar -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+             <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+             <path d="M6 21v-2a4 4 0 0 1 4 -4h4"></path>
+             <path d="M15 19l2 2l4 -4"></path>
+          </svg>
+                                      </span>
+                                    </div>
+                                    <div class="col">
+                                      <div class="font-weight-medium">
+                                        Approve Orders
+                                      </div>
+                                      <div class="text-secondary">
+                                        {{ $params['countApprove'] }}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div class="text-secondary">
-                              {{ $params['countApprove'] }}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                   <div class="col-sm-6 col-lg-3">
+                            <div class="col-sm-6 col-lg-6 mt-4">
                     <div class="card card-sm">
                       <div class="card-body">
                         <div class="row align-items-center">
@@ -219,7 +222,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-sm-6 col-lg-3">
+                  <div class="col-sm-6 col-lg-6 mt-4">
                     <div class="card card-sm">
                       <div class="card-body">
                         <div class="row align-items-center">
@@ -245,9 +248,14 @@
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div class="col-lg-6">
+
+
+                    </div>
+                    
+                  </div>
+
+                 
+                  <div class="col-lg-6">
                <div class="card">
                       <div class="card-header">
                         <h3 class="card-title">Top Customer Points</h3>
@@ -258,7 +266,7 @@
                           <div class="col-12">
                             <div class="row g-3 align-items-center">
                               <a href="#" class="col-auto">
-                                <span class="avatar" style="background-image: url(./static/avatars/000m.jpg)">
+                                <span class="avatar" style="background-image: url('profile_picture/{{ $customerpoint->image }}')">
                                   <span class="badge bg-red"></span></span>
                               </a>
                               <div class="col text-truncate d-none d-sm-inline-block">
@@ -272,6 +280,31 @@
                       </div>
                     </div>
               </div>
+                   
+                </div>
+              </div>
+              <div class="col-lg-6">
+               <div class="card">
+                      <div class="card-header">
+                        <h3 class="card-title">Sales per Products</h3>
+                      </div>
+                      <div class="card-body">
+                          <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+                      </div>
+                    </div>
+              </div>
+              <div class="col-lg-6">
+               <div class="card">
+                      <div class="card-header">
+                        <h3 class="card-title">Sales per Day</h3>
+                      </div>
+                      <div class="card-body">
+                          <div id="chartContainer1" style="height: 370px; width: 100%;"></div>
+
+                      </div>
+                    </div>
+              </div>
+              
             </div>
           </div>
         </div>
@@ -380,4 +413,76 @@
         </div>
       </div>
     </div>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+    <?php
+ 
+$limit = 50000;
+$y = 100;
+$dataPoints = array();
+for($i = 0; $i < $limit; $i++){
+  $y += rand(0, 10) - 5; 
+  array_push($dataPoints, array("x" => $i, "y" => $y));
+}
+ 
+?>
+    <script>
+window.onload = function () {
+ 
+var chart = new CanvasJS.Chart("chartContainer", {
+    animationEnabled: true,
+    theme: "light2", // "light1", "light2", "dark1", "dark2"
+    title: {
+        text: "Sales Per Products"
+    },
+    axisY: {
+        title: 'Sales'
+    },
+    data: [{
+        type: "column",
+        dataPoints: <?php echo json_encode($params['salesproduct'], JSON_NUMERIC_CHECK); ?>
+    }]
+});
+
+
+var data = [{
+    type: "line",                
+    dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+  }];
+
+  console.log(data)
+  
+//Better to construct options first and then pass it as a parameter
+var options = {
+  zoomEnabled: true,
+  animationEnabled: true,
+  title: {
+    text: "Try Zooming - Panning"
+  },
+  axisY: {
+    lineThickness: 1
+  },
+  data: data  // random data
+};
+
+
+ 
+var chart1 = new CanvasJS.Chart("chartContainer1", {
+    animationEnabled: true,
+    theme: "light2", // "light1", "light2", "dark1", "dark2"
+    title: {
+        text: "Sales Per Day"
+    },
+    axisY: {
+        title: 'Sales'
+    },
+    data: [{
+        type: "line",
+        dataPoints: <?php echo json_encode($params['salesperday'], JSON_NUMERIC_CHECK); ?>
+    }]
+});
+chart1.render();
+chart.render();
+ 
+}
+</script>
 @endsection

@@ -10,6 +10,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\Transaction;
 use App\Http\Controllers\shoppingcart;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\CustomerDashboardController;
 
 /*
@@ -24,6 +25,15 @@ use App\Http\Controllers\CustomerDashboardController;
 */
 
 Route::get('/', function () {
+    return view('home');
+});
+
+Route::get('/landing-products', function () {
+    return view('products');
+});
+Route::get('/landing-products', [LandingController::class, 'products'] );
+
+Route::get('/login', function () {
     return view('authentication.login');
 })->name('login');
 
@@ -42,11 +52,13 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/products-setup',[ProductController::class, 'productsetup']);
         Route::post('/products-setup',[ProductController::class, 'addproductsetup'])->name('addproductsetup');
         Route::post('/products',[ProductController::class, 'addproduct'])->name('addproduct');
+        Route::post('/updateproducts',[ProductController::class, 'updateproducts'])->name('updateproducts');
         Route::get('/customer',[CustomerController::class, 'index']);
         Route::get('/customer/pdf',[CustomerController::class, 'createPDF']);
         Route::post('/customer',[CustomerController::class, 'addcustomer'])->name('addcustomer');
         Route::get('/supplier',[SupplierController::class, 'index']);
         Route::post('/supplier',[SupplierController::class, 'addsupplier'])->name('addsupplier');
+        Route::post('/updatesupplier',[SupplierController::class, 'updatesupplier'])->name('updatesupplier');
         Route::get('/purchase-products',[Transaction::class, 'PurchaseProducts']);
         Route::get('/delete-temp',[Transaction::class, 'deleteTemp']);
         Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
@@ -89,6 +101,10 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/approve-orders',[shoppingcart::class, 'approveorders']);
         Route::get('/cancelled-orders',[shoppingcart::class, 'cancelledorders']);
         Route::get('/completed-orders',[shoppingcart::class, 'completedorders']);
+
+        Route::get('/settings',[CustomerDashboardController::class, 'settings']);
+
+        Route::post('/updatesettings',[CustomerDashboardController::class, 'updatesettings'])->name('updatesettings');
 
     });
 

@@ -91,7 +91,7 @@ class Transaction extends Controller
                 $TempProductModel->product_id = $productsetups->free_product_id;
                 $TempProductModel->voucher = $request->voucher;
                 
-                $TempProductModel->POut = $productsetups->qty;
+                $TempProductModel->POut = $productsetups->qty * $request->qty;
                 $TempProductModel->PIn = 0;
                 
                 $TempProductModel->amount = $productsetups->amount;
@@ -368,7 +368,7 @@ class Transaction extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }
@@ -403,6 +403,8 @@ class Transaction extends Controller
             $application = ApplicationModel::where([ ['application_id', $application_id] ])->get();
 
 
+
+
             $maintransaction = new TransactionModel();
 
             $maintransaction->voucher = 'CS';
@@ -419,6 +421,8 @@ class Transaction extends Controller
             {
                 $transaction_product = new ProductTransactionModel();
 
+                $products = ProductsModel::select('price')->where('id', $applications->product_id)->first();
+
                 $transaction_product->voucher = 'CS';
                 $transaction_product->docnumber = 'CS'.$application_id."|".Auth::id();
                 $transaction_product->reference = $application_id;
@@ -430,7 +434,8 @@ class Transaction extends Controller
                 
                     
                 $transaction_product->piso_discount = 0;
-                $transaction_product->free = 0;
+                $applications->amount < $products->price ? $transaction_product->free = 1 : $transaction_product->free = 0;
+                
                 $transaction_product->refund = 0;
                 $transaction_product->save();
             }
@@ -447,7 +452,7 @@ class Transaction extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 1], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 1], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }
@@ -471,7 +476,7 @@ class Transaction extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 2], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 2], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }
@@ -492,7 +497,7 @@ class Transaction extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 3], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 3], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }

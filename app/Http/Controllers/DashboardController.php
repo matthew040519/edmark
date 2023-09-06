@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TransactionModel;
 use App\Models\CustomerModel;
 use App\Models\ApplicationModel;
+use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -40,9 +41,13 @@ class DashboardController extends Controller
 
         $params['countComplete'] = ApplicationModel::select('application_id')->where('status', 3)->groupBy('application_id')->count('application_id');
 
-        $params['customerpoints'] = $customerpoints = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id', DB::raw('sum(tblproduct_transaction.POut * tblproducts.points) as totalpoints'))->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->join('tblproduct_transaction', 'tblproduct_transaction.reference', 'tbltransaction.reference')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tbltransaction.voucher', 'CS')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->orderby('totalpoints', 'DESC')->get();
+        $params['customerpoints'] = $customerpoints = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.image', 'tblcustomer.lastname', 'tblcustomer.id', DB::raw('sum(tblproduct_transaction.POut * tblproducts.points) as totalpoints'))->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->join('tblproduct_transaction', 'tblproduct_transaction.reference', 'tbltransaction.reference')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tbltransaction.voucher', 'CS')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id', 'tblcustomer.image')->orderby('totalpoints', 'DESC')->get();
 
-        // dd($sales);
+        $params['salesproduct'] = ProductTransactionModel::select('tblproducts.product_name as label', DB::raw('sum(tblproduct_transaction.POut * tblproduct_transaction.amount) as y'))->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproduct_transaction.voucher', 'CS')->groupBy('tblproducts.product_name')->get()->toArray();
+
+        $params['salesperday'] = TransactionModel::select('tbltransaction.tdate as label', DB::raw('sum(tblproduct_transaction.POut * tblproduct_transaction.amount) as y'))->join('tblproduct_transaction', 'tblproduct_transaction.docnumber', 'tbltransaction.docnumber')->where('tblproduct_transaction.voucher', 'CS')->groupBy('tbltransaction.tdate')->get()->toArray();
+
+        // dd($params['salesperday']);
 
         return view('admin.dashboard')->with('params', $params);
     }

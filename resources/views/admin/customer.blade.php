@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @section('content')
 @include('layout.header')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.css">
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <div class="page-wrapper">
         <!-- Page header -->
@@ -137,6 +137,7 @@
                   <table class="table" id="example" style="width: 100%;">
                     <thead>
                       <tr>
+                        <th><button class="table-sort" data-sort="sort-name">Email</button></th>
                         <th><button class="table-sort" data-sort="sort-name">First Name</button></th>
                         <th><button class="table-sort" data-sort="sort-city">Middle Name</button></th>
                         <th><button class="table-sort" data-sort="sort-city">Last Name</button></th>
@@ -148,7 +149,7 @@
                     <tbody class="table-tbody" >
                      @foreach($customer as $customers)
                       <tr>
-                        
+                        <td class="sort-city">{{ $customers->email}}</td>
                         <td class="sort-city">{{ $customers->firstname}}</td>
                         <td class="sort-city">{{ $customers->middlename}}</td>
                         <td class="sort-city">{{ $customers->lastname}}</td>

@@ -7,6 +7,7 @@ use App\Models\ProductsModel;
 use Illuminate\Support\Facades\DB;
 use App\Models\CustomerModel;
 use App\Models\ApplicationModel;
+use App\Models\ProductSetupModel;
 use Illuminate\Support\Facades\Auth;
 
 class shoppingcart extends Controller
@@ -34,7 +35,7 @@ class shoppingcart extends Controller
 
         $total = 0;
 
-        $params['application'] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 0] ])->get();
+        $params['application'] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 0] ])->get();
 
         foreach($params['application'] as $application)
         {
@@ -73,6 +74,8 @@ class shoppingcart extends Controller
 
         $params['products'] = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_details', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproducts.id', $product_id)->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id'])->first();
 
+        $params['free_product'] = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty', 'b.image', 'b.product_details', 'tblproductsetup.id')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->where('tblproductsetup.product_id', $product_id)->get();
+
         return view('customer.orderproductsdetails')->with('params', $params);
     }
 
@@ -86,6 +89,19 @@ class shoppingcart extends Controller
         $application->qty = $request->qty;
         $application->amount = $request->price;
         $application->save();
+
+        $freeproduct = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty', 'b.image', 'tblproductsetup.free_product_id', 'b.product_details', 'tblproductsetup.id')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->where('tblproductsetup.product_id', $request->product_id)->get();
+
+        foreach($freeproduct as $freeproducts)
+        {
+            $application = new ApplicationModel();
+
+            $application->customer_id = $this->user_id;
+            $application->product_id = $freeproducts->free_product_id;
+            $application->qty = $freeproducts->qty * $request->qty;
+            $application->amount = $freeproducts->amount;
+            $application->save();
+        }
 
         return json_encode(array(
             "statusCode"=>200
@@ -132,7 +148,7 @@ class shoppingcart extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 0], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 0], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }
@@ -156,7 +172,7 @@ class shoppingcart extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 1], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 1], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }
@@ -180,7 +196,7 @@ class shoppingcart extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 2], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 2], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }
@@ -204,7 +220,7 @@ class shoppingcart extends Controller
         {
             $total = 0;
 
-            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblproducts.price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 3], ['tblapplication.application_id', $application->application_id] ])->get();
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 3], ['tblapplication.application_id', $application->application_id] ])->get();
 
           
         }

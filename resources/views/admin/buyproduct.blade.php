@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @section('content')
 @include('layout.header')
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.css">
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <div class="page-wrapper">
@@ -191,7 +191,7 @@
                           <td class="sort-score">{{ number_format($temp_products->amount, 2)}}</td>
                           <td class="sort-date">{{ number_format($temp_products->piso_discount, 2)}}</td>
                           <td class="sort-date">{{ number_format(($temp_products->amount * $temp_products->POut) - $temp_products->piso_discount, 2)}}</td>
-                          <td><a href="" data-bs-toggle="modal" data-bs-target="#modal-danger{{ $temp_products->id }}" aria-label="Create new report" class="btn btn-danger btn-sm">Delete</a></td>
+                          <td><a href="" data-bs-toggle="modal" data-bs-target="#modal-danger{{ $temp_products->id }}" aria-label="Create new report" class="btn btn-danger">Delete</a></td>
                         </tr>
                         <div class="modal modal-blur fade" id="modal-danger{{ $temp_products->id }}" tabindex="-1" role="dialog" aria-hidden="true">
                           <div class="modal-dialog modal-md modal-dialog-centered" role="document">

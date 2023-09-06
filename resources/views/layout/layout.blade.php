@@ -45,7 +45,7 @@
     <link href="./dist/css/tabler-payments.min.css?1685973381" rel="stylesheet"/>
     <link href="./dist/css/tabler-vendors.min.css?1685973381" rel="stylesheet"/>
     <link href="./dist/css/demo.min.css?1685973381" rel="stylesheet"/>
-    
+    <script src="https://code.jquery.com/jquery-3.7.0.js" type="text/javascript"></script>
     <style>
       @import url('https://rsms.me/inter/inter.css');
       :root {

@@ -13,9 +13,28 @@ class ProductController extends Controller
     public function index()
     {
 
-        $products = ProductsModel::all();
+        $params = [];
 
-        return view('admin.products')->with('products', $products);
+        $params['products'] = ProductsModel::all();
+
+        function generateRandomNumber() {
+
+            $number = mt_rand(1000000000, 9999999999);
+
+            if (randomNumberExists($number)) {
+                return generateRandomNumber();
+            }
+
+            return $number;
+        }
+
+        function randomNumberExists($number) {
+            return ProductsModel::where('product_code', $number)->exists();
+        }
+
+        $params['product_code'] = generateRandomNumber();
+
+        return view('admin.products')->with('params', $params);
     }
 
     public function addproduct(Request $request)
@@ -46,7 +65,15 @@ class ProductController extends Controller
 
         $params['products'] = ProductsModel::all();
 
-        $params['productsetup'] = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->get();
+        $id = request()->id;
+
+        if($id != "")
+        {
+
+            ProductSetupModel::where('id', $id)->delete();
+        }
+
+        $params['productsetup'] = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty', 'tblproductsetup.id')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->get();
 
         // dd($productsetup);  
 
@@ -65,5 +92,19 @@ class ProductController extends Controller
 
         // return redirect('products-setup');
         return redirect()->back()->with('status', 'Product Setup Add Successfully');
+    }
+
+    public function updateproducts(Request $request)
+    {
+        $file = $request->file('image');
+
+        ProductsModel::where('id', $request->id)->update(['product_code' => $request->product_code, 'product_name' => $request->product_name, 'product_details' => $request->product_details, 'points' => $request->product_points, 'price' => $request->product_price]);
+
+        if($file)
+        {
+            ProductsModel::where('id', $request->id)->update(['image' => $file->getClientOriginalName()]);
+        }
+
+        return redirect()->back()->with('status', 'Product Updated Successfully');
     }
 }

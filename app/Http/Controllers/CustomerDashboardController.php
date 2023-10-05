@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 class CustomerDashboardController extends Controller
 {
     public $user_id;
+    public $user_status;
     //
 
     public function __construct()
@@ -25,6 +26,7 @@ class CustomerDashboardController extends Controller
             $customer = CustomerModel::where('email', Auth::user()->email)->first();
 
             $this->user_id = $customer->id;
+            $this->user_status = $customer->customer_type;
 
             return $next($request);
 
@@ -36,7 +38,7 @@ class CustomerDashboardController extends Controller
 
         $params = [];
 
-        $params['products'] = ProductsModel::all();
+        $params['products'] = ProductsModel::paginate(8);
 
         $params['countPending'] = ApplicationModel::select('application_id')->where([ ['status', 0], ['customer_id', $this->user_id] ])->groupBy('application_id')->count('application_id');
 
@@ -47,6 +49,8 @@ class CustomerDashboardController extends Controller
         $params['countComplete'] = ApplicationModel::select('application_id')->where([ ['status', 3], ['customer_id', $this->user_id] ])->groupBy('application_id')->count('application_id');
 
         $params['points'] = TransactionModel::select(DB::raw('sum(tblproduct_transaction.POut * tblproducts.points) as totalpoints'))->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->join('tblproduct_transaction', 'tblproduct_transaction.reference', 'tbltransaction.reference')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tbltransaction.voucher', 'CS')->where('tbltransaction.customer_id', $this->user_id)->first();
+
+        $params['customer_type'] = $this->user_status;
 
         return view('customer.customerdashboard')->with('params', $params);
     }

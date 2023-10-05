@@ -166,45 +166,47 @@
             <h5 class="modal-title">Checkout</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-            <form method="POST" action="{{ route('checkout') }}" enctype="multipart/form-data">
-              {{ csrf_field() }}
-              <div class="row">
-                  <div class="col-lg-12">
-                      <div class="mb-3">
-                        <label>Mode of Payment</label>
-                                  <select class="form-control" name="mop" required="">
-                                    <option disabled="" selected=""> -- Select Mode of Payment --</option>
-                                    <option value="Gcash">Gcash</option>
-                                    <option value="Cash">Cash</option>
-                                  </select>
-                      </div>
-                     <!--  <div class="mb-3">
-                        <label class="form-label">Price</label>
-                        <input type="number" class="form-control" readonly="" id="price" name="price" placeholder="Price">
-                      </div> -->
-                  </div>
-                  <div class="col-lg-12">
-                      <div class="mb-3">
-                        <label class="form-label">Pickup Date</label>
-                        <input type="date" class="form-control" required="" id="date" name="date" placeholder="Date">
-                      </div>
-                  </div>
-              </div>
-                
+          <form method="POST">
+            <div class="modal-body">
+              <!-- <form method="POST" action="{{ route('checkout') }}" enctype="multipart/form-data"> -->
+
+                <!-- {{ csrf_field() }} -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                          <label>Mode of Payment</label>
+                                    <select class="form-control" id="mop" name="mop" required="">
+                                      <option disabled="" selected=""> -- Select Mode of Payment --</option>
+                                      <option value="Gcash">Gcash</option>
+                                      <option value="Cash">Cash</option>
+                                    </select>
+                        </div>
+                       <!--  <div class="mb-3">
+                          <label class="form-label">Price</label>
+                          <input type="number" class="form-control" readonly="" id="price" name="price" placeholder="Price">
+                        </div> -->
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                          <label class="form-label">Pickup Date</label>
+                          <input type="date" class="form-control" required="" id="date" name="date" placeholder="Date">
+                        </div>
+                    </div>
+                </div>
+                  
+                   
                  
-               
-            
-          </div>
-           
-          <div class="modal-footer">
-            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
-              Cancel
-            </a>
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-            <input type="submit" id="save" class="btn btn-success ms-auto" value="Checkout" name="addproduct">
-            
-          </div>
+              
+            </div>
+             
+            <div class="modal-footer">
+              <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                Cancel
+              </a>
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+              <input type="submit" id="save" class="btn btn-success ms-auto" value="Checkout" name="addproduct">
+              
+            </div>
           </form>
         </div>
       </div>
@@ -212,5 +214,36 @@
         @include('layout.footer')
       </div>
     </div>
-   
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key')}}', {cluster: 'ap1'});
+        const channel = pusher.subscribe('public');
+
+        console.log(pusher);
+        $("form").submit(function (event){  
+
+          event.preventDefault();
+
+          $.ajax({
+
+              url: '/checkout',
+              method: 'POST',
+              headers: {
+                  'X-Socket-Id' : pusher.connection.socket_id
+              },
+              data: {
+                _token: '{{ csrf_token() }}',
+                mop: $('#mop').val(),
+                date: $('#date').val()
+              }
+
+          }).done(function (res){
+              // console.log(res);
+              window.top.location = window.top.location
+          });
+
+        });
+    </script>
 @endsection

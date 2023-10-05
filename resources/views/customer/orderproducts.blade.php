@@ -46,7 +46,13 @@
                   <div class="card-body p-4 text-center">
                     <span class="avatar avatar-xl mb-3 rounded" style="background-image: url('product_image/{{ $products->image }}')"></span>
                     <h3 class="m-0 mb-1"><a href="#">{{ $products->product_name }}</a></h3>
+                    @if($params['customer_type'] === 2)
                     <div class="text-secondary">&#8369; {{ number_format($products->price, 2) }}</div>
+                    @elseif($params['customer_type'] == 1)
+                    <div class="text-secondary">&#8369; {{ number_format($products->member_price, 2) }}</div>
+                    @elseif($params['customer_type'] == 3)
+                    <div class="text-secondary">&#8369; {{ number_format($products->stockies_price, 2) }}</div>
+                    @endif
                     <div class="mt-3">
                       <span>{{ $products->product_details }}</span>
                     </div>

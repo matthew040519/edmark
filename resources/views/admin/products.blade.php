@@ -60,7 +60,7 @@
                 </div>
               
                   <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-3">
                       <div class="mb-3">
                         <label class="form-label">Product Points</label>
                         <div class="input-group input-group-flat">
@@ -69,12 +69,30 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-3">
                       <div class="mb-3">
-                       <label class="form-label">Product Price</label>
+                       <label class="form-label">SRP</label>
                         <div class="input-group input-group-flat">
                          
                           <input type="number" name="product_price" class="form-control ps-0" autocomplete="off">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-3">
+                      <div class="mb-3">
+                       <label class="form-label">Member Price</label>
+                        <div class="input-group input-group-flat">
+                         
+                          <input type="number" name="product_member_price" class="form-control ps-0" autocomplete="off">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-3">
+                      <div class="mb-3">
+                       <label class="form-label">Stockies Price</label>
+                        <div class="input-group input-group-flat">
+                         
+                          <input type="number" name="product_stockies_price" class="form-control ps-0" autocomplete="off">
                         </div>
                       </div>
                     </div>
@@ -124,11 +142,12 @@
                     <thead>
                       <tr>
                         <th><button class="table-sort" data-sort="sort-name">Image</button></th>
-                        <th><button class="table-sort" data-sort="sort-city">Product Code</button></th>
                         <th><button class="table-sort" data-sort="sort-city">Product Name</button></th>
                         <th><button class="table-sort" data-sort="sort-type">Product Details</button></th>
                         <th><button class="table-sort" data-sort="sort-score">Points</button></th>
-                        <th><button class="table-sort" data-sort="sort-date">Price</button></th>
+                        <th><button class="table-sort" data-sort="sort-date">SR Price</button></th>
+                        <th><button class="table-sort" data-sort="sort-date">Member Price</button></th>
+                        <th><button class="table-sort" data-sort="sort-date">Stockies Price</button></th>
                         <th><button class="table-sort" data-sort="sort-date">Settings</button></th>
                       </tr>
                     </thead>
@@ -139,11 +158,13 @@
                       <!-- Photo -->
                       <div class="img-responsive img-responsive-3x5 rounded-3 border" style="background-image: url(product_image/{{ $product->image}})"></div>
                     </a></td>
-                        <td class="sort-city">{{ $product->product_code}}</td>
                         <td class="sort-city">{{ $product->product_name}}</td>
                         <td class="sort-type">{{ $product->product_details}}</td>
                         <td class="sort-score">{{ $product->points}}</td>
                         <td class="sort-date">{{ $product->price}}</td>
+                        <td class="sort-score">{{ $product->member_price}}</td>
+                        <td class="sort-score">{{ $product->stockies_price}}</td>
+                        
                         <td><a href="" data-bs-toggle="modal" data-bs-target="#modal-primary{{ $product->id }}" aria-label="Create new report" class="btn btn-success">Update</a></td>
                       </tr>
                       <div class="modal modal-blur fade" id="modal-primary{{ $product->id }}" tabindex="-1" role="dialog" aria-hidden="true">

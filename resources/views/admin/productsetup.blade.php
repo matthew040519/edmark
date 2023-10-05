@@ -57,6 +57,15 @@
                       @endforeach
                   </select>
                 </div>
+                <div class="col-lg-12">
+                      <div class="mb-3">
+                       <label class="form-label">Product Quantity</label>
+                        <div class="input-group input-group-flat">
+                         
+                          <input type="number" name="p_qty" class="form-control ps-0" autocomplete="off">
+                        </div>
+                      </div>
+                    </div>
                 <div class="mb-3">
                   <label class="form-label">Free/Discounted Product</label>
                   <select class="form-control" id="product" name="free_product_id">
@@ -67,7 +76,7 @@
                 </div>
                  <div class="col-lg-12">
                       <div class="mb-3">
-                       <label class="form-label">Quantity</label>
+                       <label class="form-label">Free/Discounted Quantity</label>
                         <div class="input-group input-group-flat">
                          
                           <input type="number" name="qty" class="form-control ps-0" autocomplete="off">

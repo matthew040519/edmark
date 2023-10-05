@@ -37,8 +37,13 @@ Route::get('/login', function () {
     return view('authentication.login');
 })->name('login');
 
+Route::get('/register', function () {
+    return view('authentication.register');
+});
+
 Route::post('/login-user', [LoginController::class, 'authenticate'] )->name('loginuser');
 Route::get('/logout', [LoginController::class, 'logout'] )->name('logout');
+Route::post('/addcustomer',[LoginController::class, 'addcustomer'])->name('addguestcustomer');
 
 
 
@@ -48,6 +53,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
         Route::get('/dashboard',[DashboardController::class, 'index']);
         Route::get('/branch',[BranchController::class, 'index']);
+        Route::get('/users',[DashboardController::class, 'users']);
+        Route::post('/add-users',[DashboardController::class, 'addusers'])->name('addusers');
         Route::get('/products',[ProductController::class, 'index']);
         Route::get('/products-setup',[ProductController::class, 'productsetup']);
         Route::post('/products-setup',[ProductController::class, 'addproductsetup'])->name('addproductsetup');
@@ -68,21 +75,27 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/refund',[Transaction::class, 'refundtransaction']);
         
         Route::get('/pending-application',[Transaction::class, 'pendingapplication']);
+        Route::get('/pending-admin-orders',[Transaction::class, 'pendingOrders']);
         Route::get('/approve-application',[Transaction::class, 'approveapplication']);
         Route::get('/cancel-application',[Transaction::class, 'cancelledapplication']);
         Route::get('/completed-application',[Transaction::class, 'completeapplication']);
+        Route::get('/debt-transaction',[Transaction::class, 'debttransaction']);
+        Route::get('/payment-transaction',[Transaction::class, 'paymenttransaction']);
         
         Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
         Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
+        Route::post('/pay-debt',[Transaction::class, 'paydebt'])->name('paydebt');
         
 
         Route::get('/inventory',[ReportController::class, 'inventory']);
         Route::get('/transaction',[ReportController::class, 'transaction']);
         Route::get('/showtransaction',[ReportController::class, 'showpurchase']);
+        Route::get('/customer-ledger',[ReportController::class, 'customerledger']);
         Route::get('/showinventory',[ReportController::class, 'showinventory']);
         Route::get('/gross-profit',[ReportController::class, 'grossprofit']);
         Route::get('/show-gross-profit',[ReportController::class, 'showgrossprofit']);
         Route::get('/customer-points',[ReportController::class, 'customerpoints']);
+        Route::get('/report-customer-ledger',[ReportController::class, 'reportcustomerledger']);
         Route::get('/export',[ReportController::class, 'export']);
 
     });

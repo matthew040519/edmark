@@ -34,6 +34,48 @@ class ReportController extends Controller
         return json_encode($product);
     }
 
+    public function reportcustomerledger()
+    {
+        $show = request()->show;
+        $customer_id = request()->id;
+
+        if($show == 1)
+        {   
+            $ledger = [];
+
+            $customer = [];
+
+            if($customer_id == "")
+            {
+                $customer = TransactionModel::select('tblcustomer.id', 'tblcustomer.firstname', 'tblcustomer.lastname')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->get();
+            }
+            else
+            {
+                $customer = TransactionModel::select('tblcustomer.id', 'tblcustomer.firstname', 'tblcustomer.lastname')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->where('tbltransaction.customer_id', $customer_id)->get();
+            }
+
+            foreach($customer as $customer1)
+            {
+                $ledger[$customer1->id] = TransactionModel::select('tbldebt.reference_id', 'tbldebt.id as debt_id', 'tbltransaction.tdate', 'tbldebt.credit', 'tbldebt.debit')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.customer_id', $customer1->id)->orderBy('tbltransaction.tdate', 'DESC')->get();
+
+                $ledger['balance'][$customer1->id] = TransactionModel::select(DB::raw('FORMAT(sum(tbldebt.credit) - SUM(tbldebt.debit), 2) as totalbalance'))->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.customer_id', $customer1->id)->get();
+            }
+
+            $customers['customer'] = $customer;
+            $customers['ledger'] = $ledger;
+
+            return response()->json($customers);
+        }
+        else if($show == 2)
+        {
+            $customer = TransactionModel::select('tblcustomer.id', 'tblcustomer.firstname', 'tblcustomer.lastname')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->get();
+
+            $customers['customer'] = $customer;
+
+            return response()->json($customers);
+        }
+    }
+
     public function export()
     {
         $process = request()->process;
@@ -68,6 +110,32 @@ class ReportController extends Controller
             return view('admin.pdf_blade.grossprofit')->with('params', $params);
         }
 
+
+        if($process == 'allcustomerledger')
+        {
+
+            $ledger = [];
+
+            $customer_id = request()->id;
+
+            if($customer_id == "")
+            {
+                $ledger['customer'] = TransactionModel::select('tblcustomer.id', 'tblcustomer.firstname', 'tblcustomer.lastname')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->get();
+            }
+            else
+            {
+                $ledger['customer'] = TransactionModel::select('tblcustomer.id', 'tblcustomer.firstname', 'tblcustomer.lastname')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->where('tbltransaction.customer_id', $customer_id)->get();
+            }
+
+            foreach($ledger['customer'] as $customer1)
+            {
+                $ledger[$customer1->id] = TransactionModel::select('tbldebt.reference_id', 'tbldebt.id as debt_id', 'tbltransaction.tdate', 'tbldebt.credit', 'tbldebt.debit')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.customer_id', $customer1->id)->orderBy('tbltransaction.tdate', 'DESC')->get();
+
+                $ledger['balance'][$customer1->id] = TransactionModel::select(DB::raw('FORMAT(sum(tbldebt.credit) - SUM(tbldebt.debit), 2) as totalbalance'))->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.customer_id', $customer1->id)->first();
+            }
+
+            return view('admin.pdf_blade.allcustomerledger')->with('ledger', $ledger);
+        }
 
 
         if($process == 'transaction')
@@ -204,6 +272,25 @@ class ReportController extends Controller
         }
 
         return view('admin.customerpoints');
+    }
+
+    public function customerledger()
+    {
+       
+        // dd($productsetup); 
+
+        $show = request()->show;
+
+        if($show == 1)
+        {
+            $customerpoints = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id', DB::raw('sum(tblproduct_transaction.POut * tblproducts.points) as totalpoints'))->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->join('tblproduct_transaction', 'tblproduct_transaction.reference', 'tbltransaction.reference')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tbltransaction.voucher', 'CS')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->get();
+
+            $customerpointsdata['data'] = $customerpoints;
+
+            return json_encode($customerpointsdata);
+        }
+
+        return view('admin.customerledger');
     }
 
 }

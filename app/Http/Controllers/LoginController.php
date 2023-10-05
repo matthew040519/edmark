@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\CustomerModel;
 use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -54,26 +56,60 @@ class LoginController extends Controller
         return redirect('/');
     }
 
-    public function test()
+    public function addcustomer(Request $request)
     {
-        $salesproduct = ProductTransactionModel::select('tblproducts.product_name as label', DB::raw('sum(tblproduct_transaction.POut * tblproduct_transaction.amount) as y'))->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproduct_transaction.voucher', 'CS')->groupBy('tblproducts.product_name')->get();
+        $customer = new CustomerModel();
+        $tdate = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');
 
-        // dd($salesproduct->toArray());
+        function generateEmailNumber($firstname, $lastname) {
 
-        // $dataPoints = array(
-        //             array("label"=> "Education", "y"=> 284935),
-        //             array("label"=> "Entertainment", "y"=> 256548),
-        //             array("label"=> "Lifestyle", "y"=> 245214),
-        //             array("label"=> "Business", "y"=> 233464),
-        //             array("label"=> "Music & Audio", "y"=> 200285),
-        //             array("label"=> "Personalization", "y"=> 194422),
-        //             array("label"=> "Tools", "y"=> 180337),
-        //             array("label"=> "Books & Reference", "y"=> 172340),
-        //             array("label"=> "Travel & Local", "y"=> 118187),
-        //             array("label"=> "Puzzle", "y"=> 107530)
-        //         );
+            $number = mt_rand(100, 999);
 
-        return view('welcome')->with('dataPoints', $salesproduct->toArray());
+            $defaultemail = $firstname.'.'.$lastname.''.$number.''.'@edmark.com';
+
+            if (randomEmailExists($defaultemail)) {
+                return generateEmailNumber($firstname, $lastname);
+            }
+
+            return $defaultemail;
+        }
+
+        function randomEmailExists($email) {
+            return User::where('email', $email)->exists();
+        }
+
+        if($request->type == 1)
+        {
+            $email = generateEmailNumber($request->firstname, $request->lastname);
+        }
+        else
+        {
+            $email = $request->email;
+        }
+        
+
+        $customer->firstname = $request->firstname;
+        $customer->middlename = $request->middlename;
+        $customer->lastname = $request->lastname;
+        $customer->contact_number = $request->contact_number;
+        $customer->bday = $request->bdate;
+        $customer->address = $request->address;
+        $customer->encoded_date = $tdate;
+        $customer->encoded_by = 1;
+        $customer->email = $email;
+        $customer->password = Hash::make($request->password);
+        $customer->customer_type = $request->type;
+        $customer->save();
+
+        $user = new User();
+
+        $user->name = $request->firstname.' '.$request->lastname;
+        $user->email = $email;
+        $user->password = Hash::make($request->password);
+        $user->role = 'customer';
+        $user->save();
+
+        // return redirect('customer');
+        return redirect()->back()->with('status', 'Customer Add Successfully');
     }
-
 }

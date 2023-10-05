@@ -9,12 +9,14 @@ use App\Models\CustomerModel;
 use App\Models\ApplicationModel;
 use App\Models\ProductSetupModel;
 use Illuminate\Support\Facades\Auth;
+use App\Events\PusherBroadcast;
 
 class shoppingcart extends Controller
 {
     //
 
     public $user_id;
+    public $user_status;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class shoppingcart extends Controller
             $customer = CustomerModel::where('email', Auth::user()->email)->first();
 
             $this->user_id = $customer->id;
+            $this->user_status = $customer->customer_type;
 
             return $next($request);
         });
@@ -53,6 +56,8 @@ class shoppingcart extends Controller
 
         $search = request()->search;
 
+        $params['customer_type'] = $this->user_status;
+
         if($search == "")
         {
             $params['products'] = ProductsModel::where('active', 1)->paginate(8);
@@ -72,9 +77,11 @@ class shoppingcart extends Controller
 
         $product_id = request()->id;
 
-        $params['products'] = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_details', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproducts.id', $product_id)->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id'])->first();
+        $params['products'] = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_details', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.member_price', 'tblproducts.stockies_price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproducts.id', $product_id)->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id'])->first();
 
         $params['free_product'] = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty', 'b.image', 'b.product_details', 'tblproductsetup.id')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->where('tblproductsetup.product_id', $product_id)->get();
+
+        $params['customer_type'] = $this->user_status;
 
         return view('customer.orderproductsdetails')->with('params', $params);
     }
@@ -90,17 +97,26 @@ class shoppingcart extends Controller
         $application->amount = $request->price;
         $application->save();
 
-        $freeproduct = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty', 'b.image', 'tblproductsetup.free_product_id', 'b.product_details', 'tblproductsetup.id')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->where('tblproductsetup.product_id', $request->product_id)->get();
+        // $freeproduct = ProductSetupModel::select('a.product_name as aproduct', 'b.product_name as bproduct', 'tblproductsetup.amount', 'tblproductsetup.qty', 'b.image', 'tblproductsetup.free_product_id', 'b.product_details', 'tblproductsetup.id')->join('tblproducts as a', 'a.id', 'tblproductsetup.product_id')->join('tblproducts as b', 'b.id', 'tblproductsetup.free_product_id')->where('tblproductsetup.product_id', $request->product_id)->first();
 
-        foreach($freeproduct as $freeproducts)
+        $isExist = ProductSetupModel::where('product_id', $request->product_id)->exists();
+
+        if($isExist)
         {
-            $application = new ApplicationModel();
+            $freeproduct = ProductSetupModel::where('product_id', $request->product_id)->first();
 
-            $application->customer_id = $this->user_id;
-            $application->product_id = $freeproducts->free_product_id;
-            $application->qty = $freeproducts->qty * $request->qty;
-            $application->amount = $freeproducts->amount;
-            $application->save();
+            $countqty = intval(floor($request->qty / $freeproduct->p_qty));
+
+            if($countqty > 0)
+            {
+                $application = new ApplicationModel();
+
+                $application->customer_id = $this->user_id;
+                $application->product_id = $freeproduct->free_product_id;
+                $application->qty = $freeproduct->qty * $countqty;
+                $application->amount = $freeproduct->amount;
+                $application->save();
+            }
         }
 
         return json_encode(array(
@@ -130,7 +146,22 @@ class shoppingcart extends Controller
 
         $randomNum = generateRandomNumber();
 
-        ApplicationModel::where([ ['customer_id', $this->user_id], ['checkout', 0] ])->update(['application_id' => $randomNum, 'mop' => $request->mop, 'checkout' => 1, 'pickup_date' => $request->date]);
+        $rownum = 0;
+
+        $maxRownum = ApplicationModel::max('rownum');
+
+        // dd($maxRownum);
+
+        if($maxRownum != "" || $maxRownum != 0)
+        {
+            $rownum = $maxRownum + 1;
+        }
+
+        ApplicationModel::where([ ['customer_id', $this->user_id], ['checkout', 0] ])->update(['application_id' => $randomNum, 'mop' => $request->mop, 'checkout' => 1, 'pickup_date' => $request->date, 'rownum' => $rownum]);
+
+        $checkout = ApplicationModel::select('application_id', 'rownum', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('application_id', 'rownum', 'status')->OrderBy('rownum', 'DESC')->get()->toArray();
+
+        broadcast(new PusherBroadcast($checkout))->toOthers();
 
         return redirect()->back()->with('status', 'Checkout Successfully');
     }
@@ -142,7 +173,7 @@ class shoppingcart extends Controller
         $params['title'] = "Pending";
 
     
-        $params['application_id'] = ApplicationModel::select('application_id', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('application_id')->groupBy('status')->get();
+        $params['application_id'] = ApplicationModel::select('application_id', 'rownum', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('application_id', 'rownum', 'status')->OrderBy('rownum', 'DESC')->get();
 
         foreach($params['application_id'] as $application)
         {
@@ -153,10 +184,6 @@ class shoppingcart extends Controller
           
         }
 
-
-
-        // dd(intval($total));
-
         return view('customer.orders')->with('params', $params);
     }
 
@@ -166,7 +193,7 @@ class shoppingcart extends Controller
 
         $params['title'] = "Approve";
     
-        $params['application_id'] = ApplicationModel::select('application_id', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 1] ])->groupBy('application_id')->groupBy('status')->get();
+        $params['application_id'] = ApplicationModel::select('application_id', 'rownum', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 1] ])->groupBy('application_id', 'rownum', 'status')->OrderBy('rownum', 'DESC')->get();
 
         foreach($params['application_id'] as $application)
         {
@@ -176,8 +203,6 @@ class shoppingcart extends Controller
 
           
         }
-
-
 
         // dd(intval($total));
 
@@ -190,7 +215,7 @@ class shoppingcart extends Controller
 
         $params['title'] = "Cancelled";
         
-        $params['application_id'] = ApplicationModel::select('application_id', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 2] ])->groupBy('application_id')->groupBy('status')->get();
+        $params['application_id'] = ApplicationModel::select('application_id', 'rownum', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 2] ])->groupBy('application_id', 'rownum', 'status')->OrderBy('rownum', 'DESC')->get();
 
         foreach($params['application_id'] as $application)
         {
@@ -214,7 +239,7 @@ class shoppingcart extends Controller
 
         $params['title'] = "Completed";
     
-        $params['application_id'] = ApplicationModel::select('application_id', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 3] ])->groupBy('application_id')->groupBy('status')->get();
+        $params['application_id'] = ApplicationModel::select('application_id', 'rownum', 'status', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->where([ ['customer_id', $this->user_id], ['tblapplication.checkout', 1], ['tblapplication.status', 3] ])->groupBy('application_id', 'rownum', 'status')->OrderBy('rownum', 'DESC')->get();
 
         foreach($params['application_id'] as $application)
         {

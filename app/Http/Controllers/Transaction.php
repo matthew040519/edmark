@@ -9,11 +9,13 @@ use App\Models\CustomerModel;
 use App\Models\ProductsModel;
 use App\Models\TempProductModel;
 use App\Models\ProductSetupModel;
+use App\Models\debtmodel;
 use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\ApplicationModel;
+use App\Events\PusherBroadcast;
 
 class Transaction extends Controller
 {
@@ -78,28 +80,37 @@ class Transaction extends Controller
         $TempProductModel->user_id = Auth::id();
         $TempProductModel->save();
 
-        $productsetup = ProductSetupModel::where('product_id', $request->product_id)->get();
+        $productsetup = ProductSetupModel::where('product_id', $request->product_id)->first();
 
         // dd($productsetup);
 
         if($request->voucher == 'CS')
         {
-            foreach($productsetup as $productsetups)
+              
+
+            $countqty = intval(floor($request->qty / $productsetup->p_qty));
+
+            // dd($countqty);
+
+            // for($x = 0; $x < $countqty; $x++)
+            // { 
+            if($countqty > 0)
             {
                 $TempProductModel = new TempProductModel();
 
-                $TempProductModel->product_id = $productsetups->free_product_id;
+                $TempProductModel->product_id = $productsetup->free_product_id;
                 $TempProductModel->voucher = $request->voucher;
-                
-                $TempProductModel->POut = $productsetups->qty * $request->qty;
+                            
+                $TempProductModel->POut = $productsetup->qty * $countqty;
                 $TempProductModel->PIn = 0;
-                
-                $TempProductModel->amount = $productsetups->amount;
+                            
+                $TempProductModel->amount = $productsetup->amount;
                 $TempProductModel->piso_discount = 0;
                 $TempProductModel->free = 1;
                 $TempProductModel->user_id = Auth::id();
                 $TempProductModel->save();
             }
+        
         }
 
         // return redirect($request->link);
@@ -177,9 +188,33 @@ class Transaction extends Controller
             TempProductModel::where('id', $temp_products->id)->delete();
         }
 
+        if($request->voucher == 'DT')
+        {
+            $rownum = 1;
+
+            $maxRownum = debtmodel::max('rownum');
+
+            // dd($maxRownum);
+
+            if($maxRownum != "" || $maxRownum != 0)
+            {
+                $rownum = $maxRownum + 1;
+            }
+
+            $debt = new debtmodel();
+            $debt->voucher = $request->voucher;
+            $debt->reference_id = $randomNum;
+            $debt->credit = intval($request->amount);
+            $debt->debit = 0;
+            $debt->rownum = $rownum;
+            $debt->save();
+        }
+
         // return redirect($request->link);
         return redirect()->back()->with('status', 'Transaction Successfully');
     }
+
+
 
     public function deleteTemp()
     {
@@ -336,6 +371,25 @@ class Transaction extends Controller
 
     }
 
+    public function pendingOrders()
+    {
+        $params = [];
+
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.rownum', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname', 'tblapplication.rownum')->orderby('tblapplication.rownum', 'DESC')->get();
+
+        foreach($params['application_id'] as $application)
+        {
+            $total = 0;
+
+            $params['application'][$application->application_id] = ApplicationModel::select('tblproducts.product_name', 'tblapplication.amount as price', 'tblproducts.product_code', 'tblapplication.id', 'tblapplication.qty', 'tblproducts.image')->join('tblproducts', 'tblproducts.id', 'tblapplication.product_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0], ['tblapplication.application_id', $application->application_id] ])->get();
+
+        }
+
+        $data['application_id'] = $params;
+
+        return response()->json($data);
+    }
+
     public function pendingapplication()
     {
         $params = [];
@@ -344,6 +398,7 @@ class Transaction extends Controller
 
         $application_id = request()->application_id;
         $status = request()->status;
+        $notif = request()->notif;
 
         if($application_id != "")
         {
@@ -361,8 +416,15 @@ class Transaction extends Controller
 
         }
 
-    
-        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->orderby('tblapplication.status')->paginate(10);
+        if($notif == 1)
+        {
+            
+            $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.rownum', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname', 'tblapplication.rownum')->orderby('tblapplication.rownum', 'DESC')->paginate(10);
+        }   
+        else
+        {
+            $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.rownum', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 0] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname', 'tblapplication.rownum')->orderby('tblapplication.rownum', 'DESC')->paginate(10);
+        }
 
         foreach($params['application_id'] as $application)
         {
@@ -373,11 +435,163 @@ class Transaction extends Controller
           
         }
 
-
-
-        // dd(intval($total));
-
         return view('admin.orders')->with('params', $params);
+    }
+
+    public function debttransaction()
+    {
+        $customer = CustomerModel::all();
+        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproduct_transaction.refund', 0)->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id'])->get();
+
+        $params = [];
+
+        $temp_product = TempProductModel::select('tbltempproduct.id', 'tbltempproduct.free', 'tblproducts.product_name', 'tbltempproduct.PIn', 'tbltempproduct.POut', 'tbltempproduct.amount', 'tbltempproduct.piso_discount', DB::raw('tbltempproduct.amount * tbltempproduct.POut - tbltempproduct.piso_discount as total'))->join('tblproducts', 'tblproducts.id', 'tbltempproduct.product_id')->where('user_id', Auth::id())->where('voucher', 'DT')->get();
+
+        $params['customer'] = $customer;
+        $params['product'] = $products;
+        $params['temp_product'] = $temp_product;
+        $params['total'] = $temp_product->sum('total');
+        
+        return view('admin.debttransaction')->with('params', $params);
+    }
+
+    public function paymenttransaction()
+    {
+        $customer = TransactionModel::select('tblcustomer.id', 'tblcustomer.firstname', 'tblcustomer.lastname')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->groupBy('tblcustomer.firstname', 'tblcustomer.lastname', 'tblcustomer.id')->having(DB::raw('sum(tbldebt.credit) - SUM(tbldebt.debit)'), '!=', 0)->get();
+
+        $params = [];
+
+        $customer_id = request()->id;
+
+        $ledger = [];
+        $balance = 0;
+
+        if($customer_id != "")
+        {
+            $ledger = TransactionModel::select('tbldebt.reference_id', 'tbldebt.id as debt_id', 'tbltransaction.tdate', 'tbldebt.credit', 'tbldebt.debit')->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.customer_id', $customer_id)->orderBy('tbltransaction.tdate', 'DESC')->get();
+
+            // dd($ledger);
+
+            $customer_name = CustomerModel::where('id', $customer_id)->first();
+
+            $params['customer_name'] = $customer_name;
+
+            $balance = TransactionModel::select(DB::raw('sum(tbldebt.credit) - SUM(tbldebt.debit) as totalbalance'))->join('tbldebt', 'tbldebt.reference_id', 'tbltransaction.reference')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.customer_id', $customer_id)->first();
+        }
+
+        $params['tdate'] = Carbon::now()->timezone('Asia/Manila')->format('Y-m-d');
+
+        $params['customer'] = $customer;
+        $params['ledger'] = $ledger;
+        $params['balance'] = $balance;
+        
+        return view('admin.payment')->with('params', $params);
+    }
+
+    public function paydebt(Request $request)
+    {
+        // dd($request->all());
+        $transaction = new TransactionModel();
+
+        $randomNum = 0;
+
+        function generateRandomNumber() {
+
+            $number = mt_rand(1000000000, 9999999999);
+
+            if (randomNumberExists($number)) {
+                return generateRandomNumber();
+            }
+
+            return $number;
+        }
+
+        function randomNumberExists($number) {
+            return TransactionModel::where('reference', $number)->exists();
+        }
+
+        $randomNum = generateRandomNumber();
+
+        
+
+        $transaction->voucher = $request->voucher;
+        $transaction->docnumber = $request->voucher.$randomNum."|".Auth::id();
+        $transaction->reference = $randomNum;
+        $transaction->encoded_by = Auth::id();
+        $transaction->customer_id = $request->id;
+        $transaction->tdate = $request->tdate;
+        $transaction->amount = intval($request->amount);
+        $transaction->branch_id = Auth::user()->branch_id;
+        $transaction->save();
+        // dd(intval($request->totalbalance));
+
+        if(intval($request->totalbalance) == intval($request->amount))
+        {
+            $active_reference = debtmodel::select('tbldebt.reference_id')->join('tbltransaction', 'tbltransaction.reference', 'tbldebt.reference_id')->where([ ['tbltransaction.customer_id', $request->id], ['tbldebt.active', 1] ])->get();
+
+            // dd($active_reference);
+
+            $params = [];
+
+            foreach($active_reference as $active_references)
+            {
+                $debt_product = ProductTransactionModel::where('reference', $active_references->reference_id)->get();
+                foreach($debt_product as $debt_products)
+                {
+                    $product_transaction = new ProductTransactionModel();
+                    $product_transaction->voucher = $request->voucher;
+                    $product_transaction->docnumber = $request->voucher.$randomNum."|".Auth::id();
+                    $product_transaction->reference = $randomNum;
+                    $product_transaction->product_id = $debt_products->product_id;
+                    $product_transaction->PIn = $debt_products->POut;
+                    $product_transaction->POut = 0;
+                    $product_transaction->amount = $debt_products->amount;
+                    
+                    
+                    $product_transaction->piso_discount = $debt_products->piso_discount;
+                    $product_transaction->save();
+
+                    $product_transaction = new ProductTransactionModel();
+                    $product_transaction->voucher = $request->voucher;
+                    $product_transaction->docnumber = $request->voucher.$randomNum."|".Auth::id();
+                    $product_transaction->reference = $randomNum;
+                    $product_transaction->product_id = $debt_products->product_id;
+                    $product_transaction->POut = $debt_products->POut;
+                    $product_transaction->PIn = 0;
+                    $product_transaction->amount = $debt_products->amount;
+                    
+                    
+                    $product_transaction->piso_discount = $debt_products->piso_discount;
+                    $product_transaction->save();
+                }   
+
+                debtmodel::where([ ['reference_id', $active_references->reference_id] ])->update(['active' => 0]);
+            }
+            // dd($debt_product);
+        }
+
+        $rownum = 1;
+
+            $maxRownum = debtmodel::max('rownum');
+
+            // dd($maxRownum);
+
+            if($maxRownum != "" || $maxRownum != 0)
+            {
+                $rownum = $maxRownum + 1;
+            }
+
+            $debt = new debtmodel();
+            $debt->voucher = $request->voucher;
+            $debt->reference_id = $randomNum;
+            $debt->credit = 0;
+            $debt->debit = intval($request->amount);
+            $debt->rownum = $rownum;
+            $debt->active = 0;
+            $debt->save();
+
+        // return redirect($request->link);
+        return redirect()->back()->with('status', 'Transaction Successfully');
     }
 
     public function approveapplication()
@@ -446,7 +660,7 @@ class Transaction extends Controller
         }
 
     
-        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 1] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->paginate(10);
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.rownum', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 1] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname', 'tblapplication.rownum')->OrderBy('tblapplication.rownum', 'DESC')->paginate(10);
 
         foreach($params['application_id'] as $application)
         {
@@ -456,8 +670,6 @@ class Transaction extends Controller
 
           
         }
-
-
 
         // dd(intval($total));
 
@@ -470,7 +682,7 @@ class Transaction extends Controller
 
         $params['title'] = "Cancelled";
     
-        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 2] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->paginate(10);
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.rownum', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 2] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname', 'tblapplication.rownum')->OrderBy('tblapplication.rownum', 'DESC')->paginate(10);
 
         foreach($params['application_id'] as $application)
         {
@@ -491,7 +703,7 @@ class Transaction extends Controller
         $params['title'] = "Completed";
 
     
-        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 3] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname')->paginate(10);
+        $params['application_id'] = ApplicationModel::select('tblapplication.application_id', 'tblapplication.rownum', 'tblapplication.status', 'tblcustomer.firstname', 'tblcustomer.lastname', DB::raw('sum(tblapplication.qty * tblapplication.amount) as total'))->join('tblcustomer', 'tblcustomer.id', 'tblapplication.customer_id')->where([ ['tblapplication.checkout', 1], ['tblapplication.status', 3] ])->groupBy('status', 'customer_id', 'application_id', 'tblcustomer.firstname', 'tblcustomer.lastname', 'tblapplication.rownum')->OrderBy('tblapplication.rownum', 'DESC')->paginate(10);
 
         foreach($params['application_id'] as $application)
         {

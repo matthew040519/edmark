@@ -14,14 +14,17 @@ class PusherBroadcast implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $data = array();
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(array $data)
     {
         //
+        $this->data = $data;
     }
 
     /**
@@ -31,6 +34,12 @@ class PusherBroadcast implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        // return new PrivateChannel('channel-name');
+        return ['public'];
+    }
+
+    public function broadcastAs(): string
+    {
+        return 'chat';
     }
 }

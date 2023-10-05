@@ -5,6 +5,7 @@
       @include('layout.header')
       <div class="page-wrapper">
         <!-- Page header -->
+        @if($params['products'] != "")
         <div class="page-header d-print-none">
           <div class="container-xl">
             <div class="row g-2 align-items-center">
@@ -46,13 +47,25 @@
                         <div class="col-md-9">
                              <h1 class="m-0 mb-1">{{ $params['products']->product_name }}</h1>
                              <br>
+                              @if($params['customer_type'] === 2)
                               <div><h1 class="text-green">&#8369; {{ number_format($params['products']->price, 2) }}</h1></div>
+                              @elseif($params['customer_type'] === 1)
+                              <div><h1 class="text-green">&#8369; {{ number_format($params['products']->member_price, 2) }}</h1></div>
+                              @elseif($params['customer_type'] === 3)
+                              <div><h1 class="text-green">&#8369; {{ number_format($params['products']->stockies_price, 2) }}</h1></div>
+                              @endif
                               <div class="mt-3">
                                 {{ $params['products']->product_details }}
                               </div>
                               <br>
                               <input type="hidden" id="remain" value="{{ $params['products']->qty }}" name="">
+                              @if($params['customer_type'] === 2)
                               <input type="hidden" id="price" value="{{ $params['products']->price }}" name="">
+                              @elseif($params['customer_type'] === 1)
+                              <input type="hidden" id="price" value="{{ $params['products']->member_price }}" name="">
+                              @elseif($params['customer_type'] === 3)
+                              <input type="hidden" id="price" value="{{ $params['products']->stockies_price }}" name="">
+                              @endif
                               <input type="hidden" id="product_id" value="{{ $params['products']->id }}" name="">
                               <label><h3>Remaining: {{ $params['products']->qty }}</h3>  </label><br>
                               <label>Qty to be Order</label>
@@ -122,6 +135,24 @@
             @endif
           </div>
         </div>
+        @else
+        <div class="container-xl d-flex flex-column justify-content-center">
+                  <div class="empty">
+                    <div class="empty-img"><img src="./static/illustrations/undraw_printing_invoices_5r4r.svg" height="128" alt="">
+                    </div>
+                    <p class="empty-title">Out of Stock</p>
+                    <p class="empty-subtitle text-secondary">
+                      
+                    </p>
+                    <!-- <div class="empty-action">
+                      <a href="#" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                        Add your first client
+                      </a>
+                    </div> -->
+                  </div>
+                </div>
+        @endif
         @include('layout.footer')
       </div>
     </div>

@@ -43,7 +43,9 @@ class CustomerController extends Controller
             return User::where('email', $email)->exists();
         }
 
-        $email = generateEmailNumber($request->firstname, $request->lastname);
+            $email = generateEmailNumber($request->firstname, $request->lastname);
+        
+        
 
         $customer->firstname = $request->firstname;
         $customer->middlename = $request->middlename;
@@ -55,6 +57,7 @@ class CustomerController extends Controller
         $customer->encoded_by = Auth::id();
         $customer->email = $email;
         $customer->password = Hash::make('12345');
+        $customer->customer_type = $request->type;
         $customer->save();
 
         $user = new User();

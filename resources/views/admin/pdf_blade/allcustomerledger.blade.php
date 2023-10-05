@@ -8,7 +8,7 @@
             <div class="row g-2 align-items-center">
               <div class="col">
                 <h2 class="page-title">
-                  {{ $params['voucher'] }} Summary
+                  All Customer Ledger
                 </h2>
               </div>
               <!-- Page title actions -->
@@ -16,7 +16,7 @@
                 <button type="button" class="btn btn-primary" onclick="javascript:window.print();">
                   <!-- Download SVG icon from http://tabler-icons.io/i/printer -->
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M17 17h2a2 2 0 0 0 2 -2v-4a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2v4a2 2 0 0 0 2 2h2" /><path d="M17 9v-4a2 2 0 0 0 -2 -2h-6a2 2 0 0 0 -2 2v4" /><path d="M7 13m0 2a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2z" /></svg>
-                  Print {{ $params['voucher'] }} Summary
+                  Print Customer Ledger
                 </button>
               </div>
             </div>
@@ -30,7 +30,7 @@
                 <div class="row">
                   <div class="col-6">
                     <p class="h3" style="color: green">JO HEALTH & WELLNESS CONSULTANCY SERVICES</p>
-                    <address>
+                   <address>
                       Rm. 201, Cuenca Gonzaga Bldg.<br>
                       San Juan Street<br>
                       Barangay 12<br>
@@ -47,49 +47,42 @@
                     </address>
                   </div> -->
                   <div class="col-12 my-5">
-                    <h1>{{ $params['voucher'] }} Summary</h1>
+                    <h1>Customer Ledger</h1>
+                  </div>
+                </div>
+                @foreach($ledger['customer'] as $customer)
+                <div class="row row-cards">
+                  <div class="col-lg-12">
+                      <div id="alert" class="alert alert-secondary alert-dismissible" role="alert">
+                        <div class="d-flex">
+                            <div>{{ $customer->firstname.' '.$customer->lastname }}</div>
+                            <div class="col-auto ms-auto">
+                              <div>Balance: {{ $ledger['balance'][$customer->id]->totalbalance }}</div>
+                            </div>
+                        </div>
+                      </div>
                   </div>
                 </div>
                 <table class="table table-transparent table-responsive">
                   <thead>
                     <tr>
                       <th>Date</th>
-                      <th>Name</th>
                       <th>Reference</th>
-                      <th>Product Name</th>
-                      <th>Product Qty</th>
-                      <th>Product Amount</th>
-                      <th>Total</th>
-                      <!-- <th class="text-center" style="width: 1%">Quantity</th> -->
+                      <th>Credit</th>
+                      <th>Debit</th>
                     </tr>
                   </thead>
-                  @foreach($params['purchase'] as $purchases)
+                  @foreach($ledger[$customer->id] as $details)
                   <tr>
-                    <td>{{ $purchases->tdate }}</td>
-                    <td>{{ $purchases->supplier_name }}</td>
-                    <td>{{ $purchases->reference }}</td>
-                    <td>{{ $purchases->product_name }}</td>
-                    <td>{{ $purchases->qty }}</td>
-                    @if($purchases->voucher == 'RS')
-                    <td>0.00</td>
-                    <td>0.00</td>
-                    @else
-                    <td>{{ number_format($purchases->amount, 2) }}</td>
-                    <td>{{ number_format($purchases->amount * $purchases->qty, 2) }}</td>
-                    @endif
-                    
+                      <td>{{ $details->tdate }}</td>
+                      <td>{{ $details->reference_id }}</td>
+                      <td>{{ number_format($details->credit, 2) }}</td>
+                      <td>{{ number_format($details->debit, 2) }}</td>
                   </tr>
                   @endforeach
-                  <tr>
-                    <td colspan="6" class="strong">Total</td>
-                    @if($purchases->voucher == 'RS')
-                    <td>0.00</td>
-                    @else
-                    <td>{{ number_format($params['totalSum'], 2) }}</td>
-                    @endif
-                  </tr>
                 </table>
-                <p class="text-secondary text-center mt-5">End of {{ $params['voucher'] }} Summary</p>
+                @endforeach
+                <p class="text-secondary text-center mt-5">End of Customer Ledger</p>
               </div>
             </div>
           </div>

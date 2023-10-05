@@ -194,7 +194,7 @@
                               <div class="modal-body text-center py-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon mb-2 text-danger icon-lg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.24 3.957l-8.422 14.06a1.989 1.989 0 0 0 1.7 2.983h16.845a1.989 1.989 0 0 0 1.7 -2.983l-8.423 -14.06a1.989 1.989 0 0 0 -3.4 0z" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
                                 <h3>Are you sure?</h3>
-                                <div class="text-secondary">Do you really want to approve this orders?</div>
+                                <div class="text-secondary">Do you really want to cancel this orders?</div>
                               </div>
                               <div class="modal-footer">
                                 <div class="w-100">
@@ -269,7 +269,6 @@
               </div>
               @endif
                       </div>
-                      <!-- <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a> -->
                     </div>
                     
                   <div class="card">
@@ -318,27 +317,7 @@
                           <td class="text-secondary" data-label="Price" >
                             {{ number_format($application->price, 2) }}
                           </td>
-                          <td data-label="Total Price">{{ number_format($application->price * $application->qty, 2) }}</td>
-                          <!-- <td>
-                            <div class="btn-list flex-nowrap">
-                              <a href="#" class="btn">
-                                Edit
-                              </a>
-                              <div class="dropdown">
-                                <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
-                                  Actions
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                  <a class="dropdown-item" href="#">
-                                    Action
-                                  </a>
-                                  <a class="dropdown-item" href="#">
-                                    Another action
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                          </td> -->
+                          <td data-label="Total Price">{{ number_format($application->price * $application->qty, 2) }}</td> 
                         </tr>
                         @endforeach
                         <tr>
@@ -430,5 +409,39 @@
         @include('layout.footer')
       </div>
     </div>
-   
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+        const pusher = new Pusher('{{ config('broadcasting.connections.pusher.key')}}', {cluster: 'ap1'});
+        const channel = pusher.subscribe('public');
+
+        channel.bind('chat', function (data){
+            
+            // var application = [];
+
+            
+            // for(var x = 0; x < data.data.length; x++)
+            // {
+            //     application.push(data.data[x].application_id, data.data[x].rownum, data.data[x].status, data.data[x].total);
+            // }
+
+            // console.log(application);
+            window.top.location = window.top.location
+            // $.ajax({  
+
+            //   url: '/pending-application?notif=1',
+            //   method: 'GET',
+            //   success: function(response){
+            //     console.log(response);
+            //   }
+
+            // });
+
+          // }).done(function (res){
+          //     console.log(res);
+          // });
+        });
+
+    </script>
 @endsection

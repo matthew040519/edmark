@@ -49,6 +49,8 @@ class ProductController extends Controller
         $products->product_details = $request->product_details;
         $products->points = $request->product_points;
         $products->price = $request->product_price;
+        $products->member_price = $request->product_member_price;
+        $products->stockies_price = $request->product_stockies_price;
         $products->encoded_by = Auth::id();
         $products->save();
 
@@ -85,6 +87,7 @@ class ProductController extends Controller
 
         $ProductSetupModel = new ProductSetupModel();
         $ProductSetupModel->product_id = $request->product_id;
+        $ProductSetupModel->p_qty = $request->p_qty;
         $ProductSetupModel->free_product_id = $request->free_product_id;
         $ProductSetupModel->qty = $request->qty;
         $ProductSetupModel->amount = $request->product_price;

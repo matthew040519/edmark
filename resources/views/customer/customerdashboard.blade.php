@@ -144,72 +144,61 @@
                 </div>
               </div>
               <br>
-            <div class="row row-deck row-cards">
-              <div class="col-sm-12">
+              <div class="row g-2 align-items-center">
+              <div class="col">
+                <!-- Page pre-title -->
+               <!--  <div class="page-pretitle">
+                  
+                </div> -->
+                <h2 class="page-title">
+                  Edmark Products
+                </h2>
+              </div>
+              <!-- Page title actions -->
+              <!-- <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                  <span class="d-none d-sm-inline">
+                    <a href="#" class="btn">
+                      Points: {{ $params['points']->totalpoints }}
+                    </a>
+                  </span>
+                </div>
+              </div> -->
+            </div>
+            <br>
+            <div class="row row-cards">
+              @foreach($params['products'] as $products)
+              <div class="col-md-6 col-lg-3">
                 <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Edmark Products</h3>
-                  </div>
-                  <div class="card-body">
-                    <div id="carousel-captions" class="carousel slide" data-bs-ride="carousel">
-                      <div class="carousel-inner">
-                        @foreach($params['products'] as $product)
-                        <div class="carousel-item active">
-                          <img class="d-block w-100" alt="" height="700px" src="product_image/{{ $product->image }}">
-                          <div class="carousel-caption-background d-none d-md-block"></div>
-                          <div class="carousel-caption d-none d-md-block">
-                            <h3>{{ $product->product_name }}</h3>
-                            <p>{{ $product->product_details }}</p>
-                          </div>
-                        </div>
-                        @endforeach
-                        <!-- <div class="carousel-item">
-                          <img class="d-block w-100" alt="" src="./static/photos/young-entrepreneur-working-from-a-modern-cafe-2.jpg">
-                          <div class="carousel-caption-background d-none d-md-block"></div>
-                          <div class="carousel-caption d-none d-md-block">
-                            <h3>Slide label</h3>
-                            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                          </div>
-                        </div>
-                        <div class="carousel-item">
-                          <img class="d-block w-100" alt="" src="./static/photos/soft-photo-of-woman-on-the-bed-with-the-book-and-cup-of-coffee-in-hands.jpg">
-                          <div class="carousel-caption-background d-none d-md-block"></div>
-                          <div class="carousel-caption d-none d-md-block">
-                            <h3>Slide label</h3>
-                            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                          </div>
-                        </div>
-                        <div class="carousel-item">
-                          <img class="d-block w-100" alt="" src="./static/photos/fairy-lights-at-the-beach-in-bulgaria.jpg">
-                          <div class="carousel-caption-background d-none d-md-block"></div>
-                          <div class="carousel-caption d-none d-md-block">
-                            <h3>Slide label</h3>
-                            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                          </div>
-                        </div>
-                        <div class="carousel-item">
-                          <img class="d-block w-100" alt="" src="./static/photos/woman-working-on-laptop-at-home-office.jpg">
-                          <div class="carousel-caption-background d-none d-md-block"></div>
-                          <div class="carousel-caption d-none d-md-block">
-                            <h3>Slide label</h3>
-                            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                          </div>
-                        </div> -->
-                      </div>
-                      <a class="carousel-control-prev" href="#carousel-captions" role="button" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                      </a>
-                      <a class="carousel-control-next" href="#carousel-captions" role="button" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                      </a>
+                  <div class="card-body p-4 text-center">
+                    <span class="avatar avatar-xl mb-3 rounded" style="background-image: url('product_image/{{ $products->image }}')"></span>
+                    <h3 class="m-0 mb-1"><a href="#">{{ $products->product_name }}</a></h3>
+                    @if($params['customer_type'] === 2)
+                    <div class="text-secondary">&#8369; {{ number_format($products->price, 2) }}</div>
+                    @elseif($params['customer_type'] == 1)
+                    <div class="text-secondary">&#8369; {{ number_format($products->member_price, 2) }}</div>
+                    @elseif($params['customer_type'] == 3)
+                    <div class="text-secondary">&#8369; {{ number_format($products->stockies_price, 2) }}</div>
+                    @endif
+                    <div class="mt-3">
+                      <span>{{ $products->product_details }}</span>
                     </div>
+                  </div>
+                  <div class="d-flex">
+                    <a href="/order-product-details?id={{ $products->id }}" class="card-btn"><!-- Download SVG icon from http://tabler-icons.io/i/mail -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+   <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+   <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path>
+</svg>
+                      View </a>
+                    
                   </div>
                 </div>
               </div>
-              
+              @endforeach
             </div>
+            {{ $params['products']->links() }}
           </div>
         </div>
         @include('layout.footer')

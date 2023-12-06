@@ -100,9 +100,9 @@
                          <a class="dropdown-item" href="/customer">
                           Customer
                         </a>
-                         <a class="dropdown-item" href="/supplier">
+                        <!--  <a class="dropdown-item" href="/supplier">
                           Supplier
-                        </a>
+                        </a> -->
                       </div>
                     </div>
                   </div>
@@ -126,7 +126,7 @@
                     <div class="dropdown-menu-columns">
                       <div class="dropdown-menu-column">
                         <a class="dropdown-item" href="/purchase-products">
-                          Purchase Products
+                          Re-Stocking
                         </a>
                         <a class="dropdown-item" href="/buy-products">
                           Buy Products
@@ -144,9 +144,9 @@
                     </div>
                   </div>
                 </li>
-                <li class="nav-item dropdown">
+                <!-- <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
-                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/package -->
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
                       <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
    <path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6"></path>
@@ -178,7 +178,7 @@
                       </div>
                     </div>
                   </div>
-                </li>
+                </li> -->
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
                     <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/package -->

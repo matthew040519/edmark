@@ -82,34 +82,37 @@ class Transaction extends Controller
 
         $productsetup = ProductSetupModel::where('product_id', $request->product_id)->first();
 
+        $isExistProduct = ProductSetupModel::where('product_id', $request->product_id)->exists();
+
         // dd($productsetup);
 
         if($request->voucher == 'CS')
         {
-              
+              if($isExistProduct)
+              {
+                     $countqty = intval(floor($request->qty / $productsetup->p_qty));
 
-            $countqty = intval(floor($request->qty / $productsetup->p_qty));
+                        // dd($countqty);
 
-            // dd($countqty);
+                        // for($x = 0; $x < $countqty; $x++)
+                        // { 
+                        if($countqty > 0)
+                        {
+                            $TempProductModel = new TempProductModel();
 
-            // for($x = 0; $x < $countqty; $x++)
-            // { 
-            if($countqty > 0)
-            {
-                $TempProductModel = new TempProductModel();
-
-                $TempProductModel->product_id = $productsetup->free_product_id;
-                $TempProductModel->voucher = $request->voucher;
-                            
-                $TempProductModel->POut = $productsetup->qty * $countqty;
-                $TempProductModel->PIn = 0;
-                            
-                $TempProductModel->amount = $productsetup->amount;
-                $TempProductModel->piso_discount = 0;
-                $TempProductModel->free = 1;
-                $TempProductModel->user_id = Auth::id();
-                $TempProductModel->save();
-            }
+                            $TempProductModel->product_id = $productsetup->free_product_id;
+                            $TempProductModel->voucher = $request->voucher;
+                                        
+                            $TempProductModel->POut = $productsetup->qty * $countqty;
+                            $TempProductModel->PIn = 0;
+                                        
+                            $TempProductModel->amount = $productsetup->amount;
+                            $TempProductModel->piso_discount = 0;
+                            $TempProductModel->free = 1;
+                            $TempProductModel->user_id = Auth::id();
+                            $TempProductModel->save();
+                        }
+              }
         
         }
 

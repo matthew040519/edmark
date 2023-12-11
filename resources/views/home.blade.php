@@ -12,7 +12,7 @@
    <title>Edmark</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="landing/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('landing/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 <!--
 
 TemplateMo 546 Sixteen Clothing

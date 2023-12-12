@@ -44,7 +44,7 @@ https://templatemo.com/tm-546-sixteen-clothing
     <header class="" style="background-color: white;">
       <nav class="navbar navbar-expand-lg">
         <div class="container">
-          <h4 style="color: green">JO HEALTH & WELLNESS CONSULTANCY SERVICES sadsadadas</h4>
+          <h4 style="color: green">JO HEALTH & WELLNESS CONSULTANCY SERVICES</h4>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>

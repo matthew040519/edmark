@@ -169,7 +169,7 @@ https://templatemo.com/tm-546-sixteen-clothing
               <div class="down-content">
                 <!-- <a href="#"><h4>Tittle goes here</h4></a>
                 <h6>$15.25</h6> -->
-                <p>To offer only the best quality products, to enhance and uplift our health and well-being.</p>
+                <p>To offer only the best quality products, to enhance and uplift our health and well-beingtest.</p>
                 <!-- <ul class="stars">
                   <li><i class="fa fa-star"></i></li>
                   <li><i class="fa fa-star"></i></li>

@@ -172,13 +172,13 @@
                                                 var qty = response['data'][i].qty;
                                                 var tdate = response['data'][i].tdate;
 
-                                                var isAmount = free ? 0 : amount;
+                                                var isAmount = free == 1 ? 0 : amount;
                                                 var total = isAmount * qty;
 
                                                 grandtotal += total;
 
-                                                var isfree = free ? "<td>Free</td>" : "<td></td>";
-                                                var isfreeAmount = free ? "<td>0</td>" : "<td>" + parseFloat(amount).toLocaleString("en-US" , 
+                                                var isfree = free == 1 ? "<td>Free</td>" : "<td></td>";
+                                                var isfreeAmount = free == 1 ? "<td>0</td>" : "<td>" + parseFloat(amount).toLocaleString("en-US" , 
  {   minimumFractionDigits: 2
 }) + "</td>";
 

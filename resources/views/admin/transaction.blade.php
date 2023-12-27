@@ -191,8 +191,8 @@
                                                 var reference = response['data'][i].reference;
                                                 var product_code = response['data'][i].product_code;
                                                 var product_name = response['data'][i].product_name;
-                                                var qty = response['data'][i].qty;
-                                                var amount = response['data'][i].amount;
+                                                var qty = parseInt(response['data'][i].qty);
+                                                var amount = parseInt(response['data'][i].amount);
                                                 if(rtdvalue == 3)
                                                 {
                                                     amount = 0

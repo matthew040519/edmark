@@ -268,8 +268,8 @@
 
                                                 var tdate = response['ledger'][id][x].tdate;
                                                 var reference_id = response['ledger'][id][x].reference_id;
-                                                var credit = response['ledger'][id][x].credit;
-                                                var debit = response['ledger'][id][x].debit;
+                                                var credit = parseInt(response['ledger'][id][x].credit);
+                                                var debit = parseInt(response['ledger'][id][x].debit);
 
                                               tr_str += "<tr>" +
                                                  "<td>" + tdate +  "</td>" +

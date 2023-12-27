@@ -49,7 +49,7 @@
                   </select>
                 </div>
                 <input type="hidden" id="voucher" name="">
-                <div class="col-lg-3" style="display: hide">
+                <div class="col-lg-3" style="display: none">
                     <label>Customer</label>
                     <select class="form-control" disabled="" id="customer"  name="customer" required="">
                       <option disabled="" selected="">-- Select Customer --</option>
@@ -59,7 +59,7 @@
                   </select>
                 </div>
 
-                <div class="col-lg-3" style="display: hide">
+                <div class="col-lg-3" style="display: none">
                     <label>Supplier</label>
                     <select class="form-control" disabled="" id="customer"  name="customer" required="">
                       <option disabled="" selected="">-- Select Supplier --</option>
@@ -69,7 +69,7 @@
                   </select>
                 </div>
 
-                <div class="col-lg-3" style="display: hide">
+                <div class="col-lg-3" style="display: none">
                     <label>Reference</label>
                     <select class="form-control" disabled="" id="customer"  name="customer" required="">
                       <option disabled="" selected="">-- Select Reference --</option>

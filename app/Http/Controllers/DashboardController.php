@@ -60,7 +60,7 @@ class DashboardController extends Controller
     {
         $params = [];
 
-        $params['users'] = UserModel::join('tblbranch', 'tblbranch.id', 'users.branch_id')->join('tblusertype', 'tblusertype.id', 'users.role')->get();
+        $params['users'] = UserModel::join('tblbranch', 'tblbranch.id', 'users.branch_id')->join('tblusertype', 'tblusertype.id', 'users.user_type')->get();
 
         $params['branch'] = BranchModel::all();
 
@@ -71,6 +71,9 @@ class DashboardController extends Controller
 
     public function addusers(Request $request)
     {
+        // dd($request->user_type);
+        $user_type = $request->user_type;
+
         function generateEmailNumber($firstname) {
 
             $number = mt_rand(100, 999);
@@ -94,8 +97,8 @@ class DashboardController extends Controller
             'name' => $request->name,
             'email' => $email,
             'password' => Hash::make($request->password),
-            'role' => $request->user_type,
-            'branch_id' => $request->branch
+            'branch_id' => $request->branch,
+            'user_type' => $user_type
         ]);
 
         return redirect()->back()->with('status', 'User Add Successfully');

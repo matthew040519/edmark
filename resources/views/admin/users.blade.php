@@ -55,6 +55,7 @@
                 <div class="mb-3">
                   <label class="form-label">User Type</label>
                   <select class="form-control" name="user_type" required="">
+                    <option disabled selected>Choose..</option>
                     @foreach($params['user_type'] as $user_type)
                     <option value="{{ $user_type->id }}">{{ $user_type->user_type }}</option>
                     @endforeach

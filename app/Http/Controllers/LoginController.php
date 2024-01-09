@@ -24,24 +24,18 @@ class LoginController extends Controller
  
         if (Auth::attempt($credentials)) {
 
-            // dd($credentials['email']);
-
             $user = User::where('email', $credentials['email'])->first();
             $customer = CustomerModel::where('email', $credentials['email'])->first();
 
-            $user->role == 'admin' ? $request->session()->put('image', '') : $request->session()->put('image', $customer->image);
+            // $user->role == '1' ? $request->session()->put('image', '') : $request->session()->put('image', $customer->image);
 
             $request->session()->regenerate();
 
-            return $user->role == 'admin' ? redirect()->intended('dashboard') : redirect()->intended('customerdashboard');
-
-            // if($user->role == 'admin')
- 
+            return $user->role == '1' ? redirect()->intended('dashboard') : redirect()->intended('secretary-dashboard');
             
         }
  
         return redirect()->back()->with('status', 'User Not Found!, Please try again');
-        // return "not found";
     }
 
 

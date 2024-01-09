@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TransactionModel;
 use App\Models\SupplierModel;
+use App\Models\BranchModel;
 use App\Models\CustomerModel;
 use App\Models\ProductsModel;
 use App\Models\TempProductModel;
@@ -27,7 +28,7 @@ class Transaction extends Controller
 
         $params = [];
 
-        $temp_product = TempProductModel::select('tbltempproduct.id', 'tblproducts.product_name', 'tbltempproduct.PIn', 'tbltempproduct.amount', 'tbltempproduct.piso_discount', DB::raw('tbltempproduct.amount * tbltempproduct.PIn - tbltempproduct.piso_discount as total'))->join('tblproducts', 'tblproducts.id', 'tbltempproduct.product_id')->where('user_id', Auth::id())->where('voucher', 'PS')->get();
+        $temp_product = TempProductModel::select('tbltempproduct.id', 'tblproducts.product_name', 'tbltempproduct.PIn', 'tbltempproduct.amount', 'tbltempproduct.piso_discount', DB::raw('tbltempproduct.amount * tbltempproduct.PIn - tbltempproduct.piso_discount as total'))->join('tblproducts', 'tblproducts.id', 'tbltempproduct.product_id')->where('user_id', Auth::id())->where('voucher', 'AI')->get();
 
         $params['supplier'] = $supplier;
         $params['product'] = $products;
@@ -37,10 +38,27 @@ class Transaction extends Controller
         return view('admin.purchase')->with('params', $params);
     }
 
+    public function DistributeProducts()
+    {
+        $branch = BranchModel::all();
+        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where([ ['tblproduct_transaction.refund', 0], ['tblproduct_transaction.voucher', 'AI']])->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.image', 'tblproducts.price', 'tblproducts.id'])->get();
+
+        $params = [];
+
+        $temp_product = TempProductModel::select('tbltempproduct.id', 'tblproducts.product_name', 'tbltempproduct.PIn', 'tbltempproduct.amount', 'tbltempproduct.piso_discount', DB::raw('tbltempproduct.amount * tbltempproduct.PIn - tbltempproduct.piso_discount as total'))->join('tblproducts', 'tblproducts.id', 'tbltempproduct.product_id')->where('user_id', Auth::id())->where('voucher', 'PS')->get();
+
+        $params['branch'] = $branch;
+        $params['product'] = $products;
+        $params['temp_product'] = $temp_product;
+        $params['total'] = $temp_product->sum('total');
+
+        return view('admin.distribute')->with('params', $params);
+    }
+
     public function BuyProducts()
     {
         $customer = CustomerModel::all();
-        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->where('tblproduct_transaction.refund', 0)->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.image', 'tblproducts.price', 'tblproducts.id'])->get();
+        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tbltransaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->where([ ['tblproduct_transaction.refund', 0], ['tblproduct_transaction.voucher', '!=', 'AI'], ['tbltransaction.branch_id', Auth::user()->branch_id], ['tbltransaction.status', 1]])->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.image', 'tblproducts.price', 'tblproducts.id'])->get();
 
         $params = [];
 
@@ -54,6 +72,56 @@ class Transaction extends Controller
         return view('admin.buyproduct')->with('params', $params);
     }
 
+    public function pendingDProduts()
+    {
+        $params = [];
+
+        $pendingProducts = TransactionModel::select('tbltransaction.id', 'tdate', 'reference', 'branch_name', 'status', 'docnumber')->join('tblbranch', 'tblbranch.id', 'tbltransaction.branch_id')->where([['tbltransaction.status', 0], ['tbltransaction.branch_id', Auth::user()->branch_id]])->get();
+        
+        $params['pending-transaction'] = $pendingProducts;
+
+        foreach($params['pending-transaction'] as $pendingtransaction)
+        {
+            
+            $docnumber = $pendingtransaction->docnumber;
+
+            $params['pending-products'][$pendingtransaction->id] = ProductTransactionModel::select('tblproduct_transaction.Pin', 'tblproducts.product_name')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where([ ['tblproduct_transaction.docnumber', $docnumber], ['tblproduct_transaction.voucher', 'PS']])->get();
+
+        }
+        
+        return view('admin.pendingdproducts')->with('params', $params);
+    }
+
+    public function approveDProduts()
+    {
+        $params = [];
+
+        $pendingProducts = TransactionModel::select('tbltransaction.id', 'tdate', 'reference', 'branch_name', 'status', 'docnumber')->join('tblbranch', 'tblbranch.id', 'tbltransaction.branch_id')->where([['tbltransaction.status', 1], ['tbltransaction.voucher', 'PS'], ['tbltransaction.branch_id', Auth::user()->branch_id]])->get();
+        
+        $params['pending-transaction'] = $pendingProducts;
+
+        foreach($params['pending-transaction'] as $pendingtransaction)
+        {
+            
+            $docnumber = $pendingtransaction->docnumber;
+
+            $params['pending-products'][$pendingtransaction->id] = ProductTransactionModel::select('tblproduct_transaction.Pin', 'tblproducts.product_name')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->where([ ['tblproduct_transaction.docnumber', $docnumber], ['tblproduct_transaction.voucher', 'PS']])->get();
+
+        }
+        
+        return view('admin.approvedproducts')->with('params', $params);
+    }
+
+    public function acceptproducts(Request $request)
+    {
+        $remarks = $request->remarks;
+        $id = $request->id;
+
+        TransactionModel::where([ ['id', $id] ])->update(['remarks' => $remarks, 'status' => 1]);
+
+        return redirect()->back()->with('status', 'Products Added Successfully');
+    }
+
     public function insertTemp(Request $request)
     {
         $TempProductModel = new TempProductModel();
@@ -62,7 +130,8 @@ class Transaction extends Controller
 
         $TempProductModel->product_id = $request->product_id;
         $TempProductModel->voucher = $request->voucher;
-        if($request->voucher == 'PS')
+        
+        if($request->voucher == 'PS' || $request->voucher == 'AI')
         {
                 $TempProductModel->PIn = $request->qty;
                 $TempProductModel->POut = 0;
@@ -144,23 +213,28 @@ class Transaction extends Controller
 
         $randomNum = generateRandomNumber();
 
-        
-
         $transaction->voucher = $request->voucher;
         $transaction->docnumber = $request->voucher.$randomNum."|".Auth::id();
         $transaction->reference = $randomNum;
         $transaction->encoded_by = Auth::id();
-        if($request->voucher == 'PS')
+        if($request->voucher == 'AI')
         {
             $transaction->supplier_id = $request->supplier;
+            $transaction->branch_id = 0;
+        }
+        elseif($request->voucher == 'PS')
+        {
+            $transaction->branch_id = $request->branch;
+            $transaction->status = 0;
         }
         else
         {
             $transaction->customer_id = $request->supplier;
+            $transaction->branch_id = Auth::user()->branch_id;
         }
         $transaction->tdate = $request->tdate;
         $transaction->amount = intval($request->amount);
-        $transaction->branch_id = Auth::user()->branch_id;
+        
         $transaction->save();
 
         $temp_product = TempProductModel::where('user_id', Auth::id())->where('voucher', $request->voucher)->get();
@@ -171,7 +245,7 @@ class Transaction extends Controller
             $product_transaction->docnumber = $request->voucher.$randomNum."|".Auth::id();
             $product_transaction->reference = $randomNum;
             $product_transaction->product_id = $temp_products->product_id;
-            if($request->voucher == 'PS')
+            if($request->voucher == 'PS' || $request->voucher == 'AI')
             {
                 $product_transaction->PIn = $temp_products->PIn;
                 $product_transaction->POut = 0;
@@ -187,6 +261,23 @@ class Transaction extends Controller
             
             $product_transaction->piso_discount = $temp_products->piso_discount;
             $product_transaction->save();
+
+            
+            if($request->voucher == 'PS')
+            {
+                $product_transaction = new ProductTransactionModel();
+                $product_transaction->voucher = 'AI';
+                $product_transaction->docnumber = $request->voucher.$randomNum."|".Auth::id();
+                $product_transaction->reference = $randomNum;
+                $product_transaction->product_id = $temp_products->product_id;
+
+                $product_transaction->PIn = 0;
+                $product_transaction->POut = $temp_products->PIn;
+                $product_transaction->amount = $temp_products->amount;
+
+                $product_transaction->piso_discount = $temp_products->piso_discount;
+                $product_transaction->save();
+            }
 
             TempProductModel::where('id', $temp_products->id)->delete();
         }

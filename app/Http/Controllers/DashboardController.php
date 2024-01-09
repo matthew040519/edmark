@@ -8,6 +8,7 @@ use App\Models\CustomerModel;
 use App\Models\ApplicationModel;
 use App\Models\UserModel;
 use App\Models\BranchModel;
+use App\Models\usertype;
 use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -59,9 +60,11 @@ class DashboardController extends Controller
     {
         $params = [];
 
-        $params['users'] = UserModel::join('tblbranch', 'tblbranch.id', 'users.branch_id')->where('users.role', 'admin')->get();
+        $params['users'] = UserModel::join('tblbranch', 'tblbranch.id', 'users.branch_id')->join('tblusertype', 'tblusertype.id', 'users.role')->get();
 
         $params['branch'] = BranchModel::all();
+
+        $params['user_type'] = usertype::all();
 
         return view('admin.users')->with('params', $params);
     }
@@ -91,7 +94,7 @@ class DashboardController extends Controller
             'name' => $request->name,
             'email' => $email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
+            'role' => $request->user_type,
             'branch_id' => $request->branch
         ]);
 

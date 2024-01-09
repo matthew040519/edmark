@@ -49,7 +49,7 @@ Route::post('/addcustomer',[LoginController::class, 'addcustomer'])->name('addgu
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
 
-    Route::middleware(['restrictRole:admin'])->group(function() {
+    Route::middleware(['restrictRole:1'])->group(function() {
 
         Route::get('/dashboard',[DashboardController::class, 'index']);
         Route::get('/branch',[BranchController::class, 'index']);
@@ -67,6 +67,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::post('/supplier',[SupplierController::class, 'addsupplier'])->name('addsupplier');
         Route::post('/updatesupplier',[SupplierController::class, 'updatesupplier'])->name('updatesupplier');
         Route::get('/purchase-products',[Transaction::class, 'PurchaseProducts']);
+        Route::get('/distribute-products',[Transaction::class, 'DistributeProducts']);
+        Route::get('/pending-distributed-products',[Transaction::class, 'pendingDProduts']);
+        Route::get('/approve-distributed-products',[Transaction::class, 'approveDProduts']);
         Route::get('/delete-temp',[Transaction::class, 'deleteTemp']);
         Route::get('/buy-products',[Transaction::class, 'BuyProducts']);
         Route::get('/refund-products',[Transaction::class, 'RefundProducts']);
@@ -85,6 +88,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::post('/purchase-products',[Transaction::class, 'insertTemp'])->name('addtempproduct');
         Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
         Route::post('/pay-debt',[Transaction::class, 'paydebt'])->name('paydebt');
+        Route::post('/acceptproducts',[Transaction::class, 'acceptproducts'])->name('acceptproducts');
         
 
         Route::get('/inventory',[ReportController::class, 'inventory']);
@@ -99,7 +103,6 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/export',[ReportController::class, 'export']);
 
     });
-
 
     Route::middleware(['restrictRole:customer'])->group(function() {
 

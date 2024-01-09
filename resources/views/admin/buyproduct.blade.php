@@ -95,7 +95,11 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            @if(Auth::user()->role == '1')
             <form method="POST" action="{{ route('addtempproduct') }}" enctype="multipart/form-data">
+            @elseif(Auth::user()->role == '2')
+            <form method="POST" action="{{ route('addtempproductcashier') }}" enctype="multipart/form-data">
+            @endif
               {{ csrf_field() }}
               <div class="row">
                   <div class="col-lg-6">
@@ -209,8 +213,14 @@
                                     <div class="col"><a href="#" class="btn w-100" data-bs-dismiss="modal">
                                         Cancel
                                       </a></div>
-                                    <div class="col"><a href="/delete-temp?id={{ $temp_products->id }}&link=buy-products" class="btn btn-danger w-100">
-                                        Delete
+                                    <div class="col">
+                                    @if(Auth::user()->role == '1')
+                                      <a href="/delete-temp?id={{ $temp_products->id }}&link=buy-products" class="btn btn-danger w-100">
+                                      @elseif(Auth::user()->role == '2')
+                                      <a href="/cashier-delete-temp?id={{ $temp_products->id }}&link=cashier-buy-products" class="btn btn-danger w-100">
+                                    
+                                      @endif
+                                      Delete
                                       </a></div>
                                   </div>
                                 </div>

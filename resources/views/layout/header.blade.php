@@ -30,7 +30,11 @@
                 @endif
                 <div class="d-none d-xl-block ps-2">
                   <div>{{ Auth::user()->name }}</div>
-                  <div class="mt-1 small text-secondary">{{ Auth::user()->role }}</div>
+                  @if(Auth::user()->user_type == '1')
+                  <div class="mt-1 small text-secondary">Admin</div>
+                  @elseif(Auth::user()->user_type == '2')
+                  <div class="mt-1 small text-secondary">Secretary</div>
+                  @endif
                 </div>
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -38,7 +42,7 @@
                 <!-- <a href="./profile.html" class="dropdown-item">Profile</a> -->
                 <!-- <a href="#" class="dropdown-item">Feedback</a> -->
                 <!-- <div class="dropdown-divider"></div> -->
-                @if(Auth::user()->role == 'admin')
+                @if(Auth::user()->role == '1')
                 <a href="/adminsettings" class="dropdown-item">Settings</a>
                 @else
                 <a href="/settings" class="dropdown-item">Settings</a>
@@ -52,7 +56,7 @@
       <header class="navbar-expand-md">
         <div class="collapse navbar-collapse" id="navbar-menu">
           <div class="navbar">
-            @if(Auth::user()->role == 'admin')
+            @if(Auth::user()->role == '1')
             <div class="container-xl">
               <ul class="navbar-nav">
                 <li class="nav-item active">
@@ -85,6 +89,7 @@
                   <div class="dropdown-menu">
                     <div class="dropdown-menu-columns">
                       <div class="dropdown-menu-column">
+                      @if(Auth::user()->user_type == '1')
                         <a class="dropdown-item" href="/branch">
                           Branch
                         </a>
@@ -97,6 +102,7 @@
                         <a class="dropdown-item" href="/products-setup">
                           Apply Promo
                         </a>
+                        @endif
                          <a class="dropdown-item" href="/customer">
                           Customer
                         </a>
@@ -125,10 +131,194 @@
                   <div class="dropdown-menu">
                     <div class="dropdown-menu-columns">
                       <div class="dropdown-menu-column">
+                      @if(Auth::user()->user_type == '1')
                         <a class="dropdown-item" href="/purchase-products">
                           Re-Stocking
                         </a>
+                        <a class="dropdown-item" href="/distribute-products">
+                          Distribution
+                        </a>
+                      @endif
+                        <a class="dropdown-item" href="/pending-distributed-products">
+                          Pending Distibuted Stocks
+                        </a>
+                        <a class="dropdown-item" href="/approve-distributed-products">
+                          Approve Distibuted Stocks
+                        </a>
                         <a class="dropdown-item" href="/buy-products">
+                          Buy Products
+                        </a>
+                        
+                        <a class="dropdown-item" href="/debt-transaction">
+                          Debt Transaction
+                        </a>
+                        <a class="dropdown-item" href="/payment-transaction">
+                          Payment
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <!-- <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+   <path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6"></path>
+   <path d="M16 3v4"></path>
+   <path d="M8 3v4"></path>
+   <path d="M4 11h16"></path>
+   <path d="M15 19l2 2l4 -4"></path>
+</svg>
+                    </span>
+                    <span class="nav-link-title">
+                      Orders
+                    </span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-menu-columns">
+                      <div class="dropdown-menu-column">
+                        <a class="dropdown-item" href="/pending-application">
+                          Pending Orders
+                        </a>
+                        <a class="dropdown-item" href="/approve-application">
+                          Approve Orders
+                        </a>
+                        <a class="dropdown-item" href="/cancel-application">
+                          Cancelled Orders
+                        </a>
+                        <a class="dropdown-item" href="/completed-application">
+                          Complete Orders
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </li> -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/package -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-barcode" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                         <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                         <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                         <path d="M8 13h1v3h-1z"></path>
+                         <path d="M12 13v3"></path>
+                         <path d="M15 13h1v3h-1z"></path>
+                      </svg>
+                    </span>
+                    <span class="nav-link-title">
+                      Reports
+                    </span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-menu-columns">
+                      <div class="dropdown-menu-column">
+                        <a class="dropdown-item" href="/inventory">
+                          Inventory
+                        </a>
+                        <a class="dropdown-item" href="/gross-profit">
+                          Gross Profit
+                        </a>
+                        <a class="dropdown-item" href="/transaction">
+                          Transactions
+                        </a>
+                        <a class="dropdown-item" href="/customer-points">
+                          Customer Points
+                        </a>
+                        <a class="dropdown-item" href="/customer-ledger">
+                          Customer Ledger
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+               
+              </ul>
+              <!-- <div class="my-2 my-md-0 flex-grow-1 flex-md-grow-0 order-first order-md-last">
+                <form action="./" method="get" autocomplete="off" novalidate>
+                  <div class="input-icon">
+                    <span class="input-icon-addon">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                    </span>
+                    <input type="text" value="" class="form-control" placeholder="Search…" aria-label="Search in website">
+                  </div>
+                </form>
+              </div> -->
+            </div>
+            @elseif(Auth::user()->role == '2')
+            <div class="container-xl">
+              <ul class="navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="/secretary-dashboard" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l-2 0l9 -9l9 9l-2 0" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" /><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" /></svg>
+                    </span>
+                    <span class="nav-link-title">
+                      Home
+                    </span>
+                  </a>
+                </li>
+                <!-- <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-database-plus" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                         <path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3"></path>
+                         <path d="M4 6v6c0 1.657 3.582 3 8 3c1.075 0 2.1 -.08 3.037 -.224"></path>
+                         <path d="M20 12v-6"></path>
+                         <path d="M4 12v6c0 1.657 3.582 3 8 3c.166 0 .331 -.002 .495 -.006"></path>
+                         <path d="M16 19h6"></path>
+                         <path d="M19 16v6"></path>
+                      </svg>
+                    </span>
+                    <span class="nav-link-title">
+                      Entry
+                    </span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-menu-columns">
+                      <div class="dropdown-menu-column">
+                        <a class="dropdown-item" href="/branch">
+                          Branch
+                        </a>
+                        <a class="dropdown-item" href="/users">
+                          Users
+                        </a>
+                        <a class="dropdown-item" href="/products">
+                          Products
+                        </a>
+                        <a class="dropdown-item" href="/products-setup">
+                          Apply Promo
+                        </a>
+                         <a class="dropdown-item" href="/customer">
+                          Customer
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </li> -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false" >
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/package -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-database" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                         <path d="M12 12.75m-4 0a4 1.75 0 1 0 8 0a4 1.75 0 1 0 -8 0"></path>
+                         <path d="M8 12.5v3.75c0 .966 1.79 1.75 4 1.75s4 -.784 4 -1.75v-3.75"></path>
+                         <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                         <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
+                      </svg>
+                    </span>
+                    <span class="nav-link-title">
+                      Transaction
+                    </span>
+                  </a>
+                  <div class="dropdown-menu">
+                    <div class="dropdown-menu-columns">
+                      <div class="dropdown-menu-column">
+                        <!-- <a class="dropdown-item" href="/purchase-products">
+                          Re-Stocking
+                        </a> -->
+                        <a class="dropdown-item" href="/cashier-buy-products">
                           Buy Products
                         </a>
                         <!-- <a class="dropdown-item" href="/refund-products">
@@ -198,7 +388,7 @@
                   <div class="dropdown-menu">
                     <div class="dropdown-menu-columns">
                       <div class="dropdown-menu-column">
-                        <a class="dropdown-item" href="/inventory">
+                        <a class="dropdown-item" href="/my-inventory">
                           Inventory
                         </a>
                         <a class="dropdown-item" href="/gross-profit">

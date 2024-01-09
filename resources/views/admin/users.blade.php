@@ -53,6 +53,14 @@
                   <input type="password" class="form-control" name="password" required="" placeholder="Password">
                 </div>
                 <div class="mb-3">
+                  <label class="form-label">User Type</label>
+                  <select class="form-control" name="user_type" required="">
+                    @foreach($params['user_type'] as $user_type)
+                    <option value="{{ $user_type->id }}">{{ $user_type->user_type }}</option>
+                    @endforeach
+                  </select>
+                </div>
+                <div class="mb-3">
                   <label class="form-label">Branch</label>
                   <select class="form-control" name="branch" required="">
                     @foreach($params['branch'] as $branch)
@@ -100,6 +108,7 @@
                       <tr>
                         <th><button class="table-sort" data-sort="sort-name">Name</button></th>
                         <th><button class="table-sort" data-sort="sort-city">Email</button></th>
+                        <th><button class="table-sort" data-sort="sort-city">Role</button></th>
                         <th><button class="table-sort" data-sort="sort-city">Branch</button></th>
                       </tr>
                     </thead>
@@ -108,6 +117,7 @@
                       <tr>
                         <td class="sort-score">{{ $users->name}}</td>
                         <td class="sort-date">{{ $users->email}}</td>
+                        <td class="sort-date">{{ $users->user_type}}</td>
                         <td class="sort-date">{{ $users->branch_name}}</td>
                       </tr>
                       @endforeach

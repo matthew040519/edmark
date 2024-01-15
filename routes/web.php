@@ -102,6 +102,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/report-customer-ledger',[ReportController::class, 'reportcustomerledger']);
         Route::get('/export',[ReportController::class, 'export']);
 
+        Route::get('/change-password',[DashboardController::class, 'changepassword']);
+        Route::post('/new-password',[DashboardController::class, 'newpassword'])->name('changepassword');
+
     });
 
     Route::middleware(['restrictRole:customer'])->group(function() {

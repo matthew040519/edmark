@@ -9,6 +9,7 @@ use App\Models\ApplicationModel;
 use App\Models\UserModel;
 use App\Models\BranchModel;
 use App\Models\usertype;
+use App\Models\User;
 use App\Models\ProductTransactionModel;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -102,5 +103,19 @@ class DashboardController extends Controller
         ]);
 
         return redirect()->back()->with('status', 'User Add Successfully');
+    }
+
+    public function changepassword()
+    {
+        return view('admin.changepassword');
+    }
+
+    public function newpassword(Request $request){
+
+        $id = Auth::user()->id;
+
+        User::where('id', $id)->update(['password' =>  Hash::make($request->password)]);
+
+        return redirect()->back()->with('status', 'User Update Successfully');
     }
 }

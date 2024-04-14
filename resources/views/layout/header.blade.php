@@ -145,10 +145,11 @@
                         <a class="dropdown-item" href="/approve-distributed-products">
                           Approve Distibuted Stocks
                         </a>
+                        @if(Auth::user()->user_type == '2')
                         <a class="dropdown-item" href="/buy-products">
                           Buy Products
                         </a>
-                        
+                        @endif
                         <a class="dropdown-item" href="/debt-transaction">
                           Debt Transaction
                         </a>

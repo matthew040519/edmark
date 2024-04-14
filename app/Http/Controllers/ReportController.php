@@ -27,8 +27,17 @@ class ReportController extends Controller
 
     public function showinventory()
     {
-        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tbltransaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->where([['tblproduct_transaction.refund', 0], ['tbltransaction.branch_id', Auth::user()->branch_id], ['tbltransaction.status', 1], ['tblproduct_transaction.voucher', '!=', 'AI']])->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id', 'tblproducts.image'])->get();
+        $products = "";
 
+        if(Auth::user()->user_type == 1)
+        {
+            $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tbltransaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->where([['tblproduct_transaction.refund', 0], ['tblproduct_transaction.voucher', '=', 'AI']])->orWhere('tblproduct_transaction.voucher', '=', 'PS')->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id', 'tblproducts.image'])->get();
+        }
+        else
+        {
+            $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tbltransaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->where([['tblproduct_transaction.refund', 0], ['tbltransaction.branch_id', Auth::user()->branch_id], ['tbltransaction.status', 1], ['tblproduct_transaction.voucher', '!=', 'AI']])->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.price', 'tblproducts.id', 'tblproducts.image'])->get();
+        }
+        
         $product['data'] = $products;
 
         return json_encode($product);

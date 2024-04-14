@@ -103,7 +103,11 @@
                                     <div class="modal-footer">
                                        
                                             <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+                                            @if(Auth::user()->user_type == '2')
                                             <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Accept</button>
+                                            @else
+                                            <button type="submit" disabled class="btn btn-success" data-bs-dismiss="modal">Accept</button>
+                                            @endif
                                         </form>
                                     </div>
                                 </div>

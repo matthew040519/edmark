@@ -43,7 +43,9 @@
                     <label>Reports to View</label>
                     <select class="form-control" id="rtd"  name="rtd" required="">
                       <option disabled="" selected="">-- Select Report --</option>
+                      @if(Auth::user()->user_type == 1)
                       <option value="1" voucher="PS">Purchase Transaction</option>
+                      @endif
                       <option value="2" voucher="CS">Buy Transaction</option>
                       <option value="3" voucher="RS">Exchange Transaction</option>
                   </select>

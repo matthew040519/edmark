@@ -15,7 +15,7 @@
                   Overview
                 </div>
                 <h2 class="page-title">
-                  Buy Products
+                  Redeem Stamp Products
                 </h2>
               </div>
               <!-- Page title actions -->
@@ -51,12 +51,20 @@
                   </select>
                 </div>
                 <div class="col-lg-3">
-                    <label>Total: </label>
-                    <input type="text" class="form-control" id="total" readonly="" value="{{ number_format($params['total'], 2); }}">
+                    <label>Stamp Qty</label>
+                    <input type="number" class="form-control" required="" name="stamp_qty" placeholder="Stamp Qty">
                 </div>
-                <input type="hidden"  value="{{ $params['total']; }}" name="amount">
-                <input type="hidden" value="CS" name="voucher">
-                <input type="hidden" value="buy-products" name="link">
+                <div class="col-lg-3">
+                    <label>Stamp Codes</label>
+                    <input type="text" class="form-control" required="" name="stamp_codes" placeholder="Stamp Codes">
+                </div>
+                <div class="col-lg-3">
+                    <label>Total: </label>
+                    <input type="text" class="form-control" id="total" readonly="" value="{{ number_format($params['total'], 2) }}">
+                </div>
+                <input type="hidden"  value="{{ $params['total'] }}" name="amount">
+                <input type="hidden" value="RSP" name="voucher">
+                <input type="hidden" value="redeem-stamp" name="link">
                  <div class="col-auto ms-auto d-print-none mt-4">
                   <div class="btn-list">
 
@@ -132,8 +140,8 @@
               </div>
                 
                  
-                <input type="hidden" value="CS" name="voucher">
-                <input type="hidden" value="buy-products" name="link">
+                <input type="hidden" value="RSP" name="voucher">
+                <input type="hidden" value="redeem-stamp" name="link">
                 <div class="mb-3">
                   <label class="form-label">Qty Remaining</label>
                   <input type="number" class="form-control" readonly="" id="qty_remain" name="qty_remain" placeholder="Qty">
@@ -148,9 +156,9 @@
                   <input type="number" class="form-control" value="0" name="peso_discount" placeholder="Peso Discount">
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3" style="display: none">
                   <label class="form-label"></label>
-                  <input type="checkbox" name="free" value="1"> Free Product?
+                  <input type="checkbox" name="free" checked value="1"> Free Product?
                   {{-- <input type="number" class="form-control" value="0" name="peso_discount" placeholder="Peso Discount"> --}}
                 </div>
             
@@ -227,7 +235,7 @@
                                       </a></div>
                                     <div class="col">
                                     @if(Auth::user()->role == '1')
-                                      <a href="/delete-temp?id={{ $temp_products->id }}&link=buy-products" class="btn btn-danger w-100">
+                                      <a href="/delete-temp?id={{ $temp_products->id }}&link=redeem-stamp" class="btn btn-danger w-100">
                                       @elseif(Auth::user()->role == '2')
                                       <a href="/cashier-delete-temp?id={{ $temp_products->id }}&link=cashier-buy-products" class="btn btn-danger w-100">
                                     
@@ -263,14 +271,14 @@
 
             var totalamount = $('#total').val();
 
-            if(totalamount == "0.00")
-            {
-                $('#savetransaction').attr('disabled', true);
-            }
-            else
-            {
-                $('#savetransaction').removeAttr('disabled');
-            }
+            // if(totalamount == "0.00")
+            // {
+            //     $('#savetransaction').attr('disabled', true);
+            // }
+            // else
+            // {
+            //     $('#savetransaction').removeAttr('disabled');
+            // }
 
             $('#product_id').on('change', function() {
                 $('#price').val(($("#product_id").find(':selected').attr('data-product_amount')));

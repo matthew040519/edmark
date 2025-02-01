@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTblusertype extends Migration
+class CreateBestBuyProductProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateTblusertype extends Migration
      */
     public function up()
     {
-        Schema::create('tblusertype', function (Blueprint $table) {
+        Schema::create('tblbest_buy_product_products', function (Blueprint $table) {
             $table->id();
-            $table->integer('userID');
-            $table->string('user_type');
+            $table->string('bestbuy_stamp_code');
+            $table->integer('product_id');
+            $table->integer('free_product_id');
+            $table->decimal('amount',  8, 2)->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ class CreateTblusertype extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tblusertype');
+        Schema::dropIfExists('best_buy_product_products');
     }
 }

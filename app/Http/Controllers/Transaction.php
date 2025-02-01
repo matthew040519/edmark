@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\ApplicationModel;
 use App\Events\PusherBroadcast;
+use App\Models\BestBuyProduct;
 
 class Transaction extends Controller
 {
@@ -135,13 +136,21 @@ class Transaction extends Controller
         {
                 $TempProductModel->PIn = $request->qty;
                 $TempProductModel->POut = 0;
-                $TempProductModel->amount = $request->price;
+                $TempProductModel->amount = $productamount->price;
         }
         else
         {
                 $TempProductModel->POut = $request->qty;
                 $TempProductModel->PIn = 0;
-                $TempProductModel->amount = $productamount->price;
+                if($request->voucher == 'CS' || $request->voucher == 'RSP')
+                {
+                    $request->free == 1 ? $TempProductModel->amount = 0 :$TempProductModel->amount = $productamount->price;
+                    $request->free == 1 ? $TempProductModel->free = 1 :$TempProductModel->free = 0;
+                }
+                else
+                {
+                    $TempProductModel->amount = $productamount->price;
+                }
         }
         
         
@@ -231,6 +240,12 @@ class Transaction extends Controller
         {
             $transaction->customer_id = $request->supplier;
             $transaction->branch_id = Auth::user()->branch_id;
+        }
+        if($request->voucher == 'RSP')
+        {
+            $transaction->stamp = 1;
+            $transaction->stamp_qty = $request->stamp_qty;
+            $transaction->stamp_code = $request->stamp_codes;
         }
         $transaction->tdate = $request->tdate;
         $transaction->amount = intval($request->amount);
@@ -815,6 +830,23 @@ class Transaction extends Controller
         return view('admin.orders')->with('params', $params);
     }
 
+
+    public function bestbuyproducts()
+    {
+        $customer = CustomerModel::all();
+        $products = ProductsModel::select('tblproducts.id', 'tblproducts.image', 'tblproducts.product_name', 'tblproducts.price', DB::raw('sum(tblproduct_transaction.PIn - tblproduct_transaction.POut) as qty'))->join('tblproduct_transaction', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tbltransaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->where([ ['tblproduct_transaction.refund', 0], ['tblproduct_transaction.voucher', '!=', 'AI'], ['tbltransaction.branch_id', Auth::user()->branch_id], ['tbltransaction.status', 1]])->groupBy(['tblproducts.id', 'tblproducts.product_name', 'tblproducts.image', 'tblproducts.price', 'tblproducts.id'])->get();
+        $bestBuypromo = BestBuyProduct::all();
+        $params = [];
+
+        $temp_product = TempProductModel::select('tbltempproduct.id', 'tbltempproduct.free', 'tblproducts.product_name', 'tbltempproduct.PIn', 'tbltempproduct.POut', 'tbltempproduct.amount', 'tbltempproduct.piso_discount', DB::raw('tbltempproduct.amount * tbltempproduct.POut - tbltempproduct.piso_discount as total'))->join('tblproducts', 'tblproducts.id', 'tbltempproduct.product_id')->where('user_id', Auth::id())->where('voucher', 'CS')->get();
+
+        $params['customer'] = $customer;
+        $params['product'] = $products;
+        $params['bestBuypromo'] = $bestBuypromo;
+        $params['total'] = $temp_product->sum('total');
+        
+        return view('admin.bestbuyproducts')->with('params', $params);
+    }
     
     
 }

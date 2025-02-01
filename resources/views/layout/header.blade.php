@@ -145,6 +145,12 @@
                         <a class="dropdown-item" href="/approve-distributed-products">
                           Approve Distibuted Stocks
                         </a>
+                        <a class="dropdown-item" href="/redeem-stamp">
+                          Redeem Stamp
+                        </a>
+                        {{-- <a class="dropdown-item" href="/best-buy-products">
+                          Best Buy Product
+                        </a> --}}
                         @if(Auth::user()->user_type == '2')
                         <a class="dropdown-item" href="/buy-products">
                           Buy Products

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BestBuyController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\shoppingcart;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\StampController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +78,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::get('/getReference',[Transaction::class, 'getReference']);
         Route::get('/getProductTransaction',[Transaction::class, 'getProductTransactions']);
         Route::get('/refund',[Transaction::class, 'refundtransaction']);
+        Route::get('/best-buy-products',[Transaction::class, 'bestbuyproducts']);
+        Route::get('/redeem-stamp',[StampController::class, 'redeemstamp'])->name('redeemstamp');
         
         Route::get('/pending-application',[Transaction::class, 'pendingapplication']);
         Route::get('/pending-admin-orders',[Transaction::class, 'pendingOrders']);
@@ -89,6 +93,8 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
         Route::post('/add-purchase-products',[Transaction::class, 'insert_purchases'])->name('addpurchases');
         Route::post('/pay-debt',[Transaction::class, 'paydebt'])->name('paydebt');
         Route::post('/acceptproducts',[Transaction::class, 'acceptproducts'])->name('acceptproducts');
+        Route::post('/acceptproducts',[Transaction::class, 'acceptproducts'])->name('acceptproducts');
+        
         
 
         Route::get('/inventory',[ReportController::class, 'inventory']);

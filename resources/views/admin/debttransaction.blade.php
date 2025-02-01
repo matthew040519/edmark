@@ -52,7 +52,7 @@
                 </div>
                 <div class="col-lg-3">
                     <label>Total: </label>
-                    <input type="text" class="form-control" id="total" readonly="" value="{{ number_format($params['total'], 2); }}">
+                    <input type="text" class="form-control" id="total" readonly="" value="{{ number_format($params['total'], 2) }}">
                 </div>
                 <input type="hidden"  value="{{ $params['total']; }}" name="amount">
                 <input type="hidden" value="DT" name="voucher">

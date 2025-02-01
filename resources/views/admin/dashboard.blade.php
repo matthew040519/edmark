@@ -277,6 +277,9 @@
                           </div>
                           @endforeach
                         </div>
+                            <div class="d-flex justify-content-center mt-4">
+                            {{ $params['customerpoints']->links() }}
+                            </div>
                       </div>
                     </div>
               </div>

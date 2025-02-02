@@ -10,5 +10,5 @@ class TempProductModel extends Model
     use HasFactory;
 
     protected $table = 'tbltempproduct';
-    protected $fillable = ['voucher', 'product_id', 'PIn', 'POut', 'amount', 'piso_discount', 'user_id', 'free'];
+    protected $fillable = ['voucher', 'product_id', 'PIn', 'POut', 'amount', 'piso_discount', 'user_id', 'free', 'prv'];
 }

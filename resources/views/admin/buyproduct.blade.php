@@ -151,6 +151,7 @@
                 <div class="mb-3">
                   <label class="form-label"></label>
                   <input type="checkbox" name="free" value="1"> Free Product?
+                  <input type="checkbox" name="prv" value="1"> PRV?
                   {{-- <input type="number" class="form-control" value="0" name="peso_discount" placeholder="Peso Discount"> --}}
                 </div>
             

@@ -112,7 +112,7 @@ class ReportController extends Controller
 
             $params = [];
             
-            $params['transaction'] = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblproducts.product_code', 'tblproducts.product_name', 'tblproduct_transaction.POut AS qty', 'tblproducts.price as amount', 'tbltransaction.tdate', 'tblproduct_transaction.free')->join('tblproduct_transaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where('tbltransaction.voucher', 'CS')->where('tblproduct_transaction.free', 0)->whereBetween('tbltransaction.tdate', [$from, $to])->orderby('tblcustomer.id')->get();
+            $params['transaction'] = TransactionModel::select('tblcustomer.firstname', 'tblcustomer.lastname', 'tblproducts.product_code', 'tblproducts.product_name', 'tblproduct_transaction.POut AS qty', 'tblproducts.price as amount', 'tbltransaction.tdate', 'tblproduct_transaction.free')->join('tblproduct_transaction', 'tbltransaction.docnumber', 'tblproduct_transaction.docnumber')->join('tblproducts', 'tblproducts.id', 'tblproduct_transaction.product_id')->join('tblcustomer', 'tblcustomer.id', 'tbltransaction.customer_id')->where(['tbltransaction.voucher' => 'CS', 'tblproduct_transaction.free' => 0, 'tblproduct_transaction.prv' => 0])->whereBetween('tbltransaction.tdate', [$from, $to])->orderby('tblcustomer.id')->get();
 
             $params['totalSum'] = TransactionModel::select('tbltransaction.amount')->where('tbltransaction.voucher', 'CS')->sum('tbltransaction.amount');
 

@@ -146,6 +146,10 @@ class Transaction extends Controller
                 {
                     $request->free == 1 ? $TempProductModel->amount = 0 :$TempProductModel->amount = $productamount->price;
                     $request->free == 1 ? $TempProductModel->free = 1 :$TempProductModel->free = 0;
+                    if($request->voucher == 'CS')
+                    {
+                        $request->prv == 1 ? $TempProductModel->prv = 1 : $TempProductModel->prv = 0;
+                    }
                 }
                 else
                 {
@@ -273,7 +277,10 @@ class Transaction extends Controller
                 $product_transaction->amount = $temp_products->amount;
                 $product_transaction->free = $temp_products->free;
             }
-            
+            if($request->voucher == 'CS')
+            {
+                $product_transaction->prv = $temp_products->prv;
+            }
             $product_transaction->piso_discount = $temp_products->piso_discount;
             $product_transaction->save();
 
